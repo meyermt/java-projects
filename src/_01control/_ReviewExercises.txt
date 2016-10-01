@@ -9,11 +9,96 @@ R1.5 The following are all benefits to using Java over machine code:
 4/ Java was designed for networking and the Internet in mind; and it is generally safer than machine code
 
 R2.3 Translating math expressions to Java.  See R2.4 for inspiration.
+
+1/ dSpeed = dInitSpeed + dVelocity * dTime + dGravity * Math.pow(dTime, 2) / 2
+2/ dGravity =  4 * Math.pow(Math.PI, 2) * Math.pow(dAvgRadius, 3) / (Match.pow(dPeriod, 2) * (dMass1 + dMass2))
+3/ dFinalValue = dPrincipalValue * Math.pow(1 + dInterest / 100, dYears)
+4/ c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - 2 * a * b * Math.cos(y))
+
 R2.6 Order of precedence, and integer division.
+
+a/ 8
+b/ 1
+c/ 17
+d/ 17.5
+e/ 17
+f/ 18
+
 R2.10 Formatting. Hint: DecimalFormat object.
+
+The binary system has no exact representation of 19.93, and its representation is slighlty less than this, thus the
+answer.
+
+Was able to resolve by using NumberFormat/DecimalFormat or BigDecimal (rounding won't matter for this problem but blows
+ up if you don't choose one) in the following ways:
+
+        NumberFormat form = NumberFormat.getInstance();
+        if (form instanceof DecimalFormat) {
+            ((DecimalFormat) form).setMaximumFractionDigits(2);
+            System.out.println(((DecimalFormat) form).format(change));
+        }
+
+        //or
+
+        BigDecimal newChange = new BigDecimal(change).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        System.out.println(newChange);
+
 R2.11 Types expressed in code
+
+2 is an integer
+2.0 is a float
+'2' is a char
+"2" and "2.0" are both Strings
+
 R2.15 Math library and the modulus (%) operator
+
+Given number n
+
+first = (integer) n / 10 ^ log10 of n
+last = n % 10
+print first and last
+
 R3.18 Pseudocode
+
+int score (from input)
+String grade
+if score >= 90 && score <= 100
+    grade = A
+else if score >= 80 && score < 90
+    grade = B
+else if score >= 70 && score < 80
+    grade = C
+else if score >= 60 && score < 70
+    grade = D
+else if score < 60
+    grade = F
+else
+    log an error you should have gotten something
+
 R4.9 Types of loops
+
+While loop - Use when you want to execute a loop until the test(s)/conditions are violated.
+    Often used for sum and average, finding first matches, maxes and mins, prompting until match found
+
+Do loop - Use when you want to execue the body of the loop at least one time
+
+For loop - Use when wanting to execute a specific sequence of statements a given number of times
+    Often used for counting matches
+
 R4.12 Pseudocode
+
+//Assume input is in Celsius
+
+celsiusTemps = input array
+for i = 0; i < celsiusTemps.length; i++
+    fahrenheitTemp = 9 / 5 * celsiusTemps[i] + 32
+    print celsiusTemps[i] and fahrenheitTemp
+
 R4.15 for/while
+
+int i = 0;
+int s = 0;
+while (i <= 10) {
+     s = s + i;
+     i++;
+}
