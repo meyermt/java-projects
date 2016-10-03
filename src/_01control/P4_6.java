@@ -20,7 +20,7 @@ public class P4_6 {
     public static void main(String[] args) {
 
         System.out.println("Please enter integers (separated by space), and lowest will be returned. ");
-        System.out.print("Type any non-integer value to quit and find lowest value: ");
+        System.out.print("Please end with a String value to compute (e.g., 2 23 532 q): ");
         Scanner scanner = new Scanner(System.in);
         boolean first = true;
         int minimum = 0;

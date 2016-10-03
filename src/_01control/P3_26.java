@@ -16,8 +16,6 @@ public class P3_26 {
         if (nInput > 3999 || nInput < 0) {
             System.out.println("No Roman Numeral for this number");
         } else {
-            //computeRoman(nInput);
-            //System.out.println(convertSingleToNumerals(nInput, "I", "V", "X"));
             System.out.println(convertWholeToNumeral(nInput));
         }
     }
@@ -31,20 +29,26 @@ public class P3_26 {
            }
         }
         int nHundreds = (nInput % 1000) / 100;
-        String strRomanHunds = convertSingleToNumerals(nHundreds, "C", "D", "M");
-        strRomanFinal = strRomanFinal.concat(strRomanHunds);
+        if (nHundreds > 0) {
+            String strRomanHunds = convertSingleToNumerals(nHundreds, "C", "D", "M");
+            strRomanFinal = strRomanFinal.concat(strRomanHunds);
+        }
         int nTens = (nInput % 100) / 10;
-        String strRomanTens = convertSingleToNumerals(nTens, "X", "L", "C");
-        strRomanFinal = strRomanFinal.concat(strRomanTens);
+        if (nTens > 0) {
+            String strRomanTens = convertSingleToNumerals(nTens, "X", "L", "C");
+            strRomanFinal = strRomanFinal.concat(strRomanTens);
+        }
         int nOnes = nInput % 10;
         String strRomanOnes = convertSingleToNumerals(nOnes, "I", "V", "X");
         return strRomanFinal.concat(strRomanOnes);
-        //int nHundreds =
     }
 
     private static String convertSingleToNumerals(int nNumber, String strOne, String strFive, String strTen) {
         String strRoman;
         switch (nNumber) {
+            case 0:
+                strRoman = "";
+                break;
             case 1:
                 strRoman = strOne;
                 break;
