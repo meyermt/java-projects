@@ -14,7 +14,128 @@ Since Java5, you can even specify a variable number of arguments aka varargs whi
 Notice that the varargs parameter "String... strNickNames" must be listed last.  Calling this method would look something like this:
  String[] strReturnValues = someMethod(99, "Jim", "Jamie", "James", "Jamey", "Jimmy", "Jimbo");
 
+R5.8 Pseudocode
+
+String phoneNumber
+StringBuilder builder
+for character in phoneNumber
+    if character matches "[ABC]"
+        append 2 to builder
+    else if character matches "[DEF]"
+        append 3 to builder
+    else if character matches "[GHI]"
+        append 4 to builder
+    else if character matches "[JKL]"
+        append 5 to builder
+    else if character matches "[MNO]"
+        append 6 to builder
+    else if character matches "[PQRS]"
+        append 7 to builder
+    else if character matches "[TUV]"
+        append 8 to builder
+    else if character matches "[WXYZ]"
+        append 0 to builder
+    else
+        append character to builder
+return builder.toString
+
+R5.10 Variable scope
+
+args - parameter variable scope is main lines 3-8
+i in main - local variable scope is main lines 5-8
+b in main - local variable scope is main lines 6-8
+i in method f = parameter variable scope is method f lines 10-15
+n in method f = local variable scope is method f lines 12-15
+a in method g = parameter variable scope is method g lines 17-27
+b in method g = local variable scope is method g lines 19-27
+n in method g = local variable scope is method g, specifically for block, lines 20-24
+i in method g = local variable scope is method g, specifically iteration of for block, lines 22-24
+
+will return 26
+
+R5.14 Pass by value versus pass by reference
+
+x and y are primitives, and thus pass their actual values into the falseSwap method. So a and b are their own primitive
+parameter variables, not references to the ones passed in.
+
+Objects will pass the "value" of the address in memory, aka pass the reference, and this method is constructed with an
+assumption or intent such as that.
+
+R6.6 Arrays, initialize and and out-of-bounds
+
+a/ This will will throw an ArrayIndexOutOfBoundsException, as the for loop is incorrectly set up. To fix this, i should be
+initialized to 0 and the loop should terminate at < 10 (or < values.length, which is preferable as it reduces a magic
+number)
+
+b/ The array needs to be initialized to a certain length before being accessed. Arrays are fixed from initialization
+and the length must be declared at that time.
+
+R6.10 ArrayLists rules
+
+a/ ArrayLists cannot be of type primitive. Would have to use the Integer wrapper class here
+b/ Need at least the diamond operator here. Before Java 7, also would need the generic type.
+c/ This needs the parentheses on the right side of the instantiation.
+d/ This is trying to set a primitive value to the Integer wrapper class. Needs Integer.valueOf()
+e/ Same as above. Can't set with a primitive value.
+
+R6.11 Index values
+
+An index is the key for a position of the array. Legal index values of arrays in Java are 0..n where n = length - 1.
+A bounds error occurs when an index out of the legal bounds is accessed in code. So < 0 or >= length
+
+R6.21 Rotate elements of array pseudocode
+
+int[] sortArray = new int[6]
+populate elements of sortArray
+int firstElement = sortArray[0]
+for i = 1; i < sortArray.length - 1; i++
+    sortArray[i -1] = sortArray[i]
+sortArray[length - 1] = firstElement
+
+R6.23 Binary insert algorithm
+//sortedArray is the presorted array, length n
+int[] sortedArray
+int newNumber
+int[] newSorted = new int[n+1]
+for i = 1; i < array.length - 1; i++
+    if newNumber <=
 
 
+R6.25 References to arrays
 
+The issue here is that the array is never returned from the method. If the intent was to use the reference to the values
+array, it will not work, as the parameter variable is not a reference.
+
+R7.6 Checked versus unchecked exceptions
+
+A checked exception indicates an that something has gone wrong in the program for external reasons beyond the caller's control.
+Checked exceptions must be thrown or handled by the caller. Unchecked exceptions are typically the caller's fault, and
+do not require the caller to throw or handle. The compiler assumes you will avoid these and thus does not check them.
+
+Checked example: IOException
+Unchecked example: NumberFormatException
+
+Checked exceptions are the ones that need to be declared with the throws keyword.
+
+R7.7 Checked versus unchecked exceptions
+
+Similar to the answer above, you should be able to code around this scenario. This is very much a situation that is in the
+programmer's control to avoid by not writing code that tries to access indices that are out of bounds.
+
+R7.9 Exceptions
+
+If there is a call to a method that throws a checked exception, and the caller does not have a catch clause for this exception
+(or one of its parent exceptions), then they must throw the exception out of that method. If this is not done, the
+compiler will flag this as an error and the code will not compile.
+
+R7.11 Exceptions
+
+No, as alluded to in the answer above, the type of the exception can be a subclass of the catch clause that catches it.
+For example, you could catch Exception, and then you'd catch all exceptions, as they all extend from Exception.
+
+R7.14 Exceptions
+
+According to the API spec, next() throws both NoSuchElementException and IllegalStateException.
+nextInt() throws both of those as well as InputMismatchException. All of these are unchecked exceptions, as they are all
+avoidable with careful programming.
 

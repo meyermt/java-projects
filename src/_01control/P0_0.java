@@ -1,6 +1,9 @@
 package _01control;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -9,7 +12,7 @@ import java.util.Scanner;
  */
 public class P0_0 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         //Example: Find the max value of an indefinite series of integers entered by the user in the command-line
 
@@ -24,35 +27,13 @@ public class P0_0 {
         //print the max value to the console
 
 
-        Scanner scan = new Scanner(System.in);
-        //use the wrapper class Integer. Use diamond notation from Java7 and omit the right-hand "Integer" if you want
-        ArrayList<Integer> intValues = new ArrayList<Integer>();
+        fileStuff();
 
-        while(true){
-            try {
-                System.out.print("Type integer value or \"quit\" to exit:");
-                //any value that is not an integer (including "quit") will throw an exception, which breaks out of the loop
-                intValues.add(scan.nextInt());
-            } catch ( Exception e) {
-                break;
-            }
-        }
-        if (intValues.size() == 0){
-            System.out.println("Not enough data");
-            return;
-        }
 
-        //let's assume the zero'th element is the max
-        Integer intMax =  intValues.get(0);
-        Integer intTest;
-        //from 1 to the end of ArrayList
-        for (int nC = 1; nC < intValues.size(); nC++) {
-            intTest = intValues.get(nC);
-            if(intTest > intMax){
-                intMax = intTest;
-            }
-        }
-        System.out.println("Max value is " + intMax);
 
+    }
+
+    private static void fileStuff() throws IOException {
+        Files.createTempFile("blah", "blah");
     }
 }
