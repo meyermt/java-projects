@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 /**
  * Created by michaelmeyer on 10/5/16.
+ * This program translates a zip code into a postal bar code, where colons represent half bars and pipes full bars.
  */
 public class P5_25 {
 

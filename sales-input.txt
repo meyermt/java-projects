@@ -1,0 +1,8 @@
+John Smith;Dinner;34.50;2014-06-07
+Mary Smith;Conference;123.30;2010-12-04
+John Meyer;Conference;31.23;2010-02-01
+John Mayer;Dinner;44.34;2013-06-07
+Randy Smyth;Lodging;109.59;2012-11-17
+Dwight Schrute;Conference;3423.78;2014-03-15
+Michael Scott;Lodging;78.99;2015-06-07
+Arya Stark;Lodging;335.50;2014-05-07
