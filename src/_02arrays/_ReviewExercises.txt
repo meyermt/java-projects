@@ -93,12 +93,20 @@ for i = 1; i < sortArray.length - 1; i++
 sortArray[length - 1] = firstElement
 
 R6.23 Binary insert algorithm
-//sortedArray is the presorted array, length n
+
+//sortedArray is assumed to be populated with ints in sorted order
 int[] sortedArray
-int newNumber
-int[] newSorted = new int[n+1]
-for i = 1; i < array.length - 1; i++
-    if newNumber <=
+int insertVal
+
+int insertIndex = Arrays.binarySearch(sortedArray, insertVal)
+int[] newSortedArray = new int[sortedArray.length]
+for int i = 0; i < newSortedArray.length; i++
+    if i < insertIndex
+        newSortedArray[i] = sortedArray[i]
+    else if i == insertIndex
+        newSortedArray[i] == insertVal
+    else
+        newSortedArray[i] = sortedArray[i + 1]
 
 
 R6.25 References to arrays
