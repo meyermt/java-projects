@@ -2,8 +2,69 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R8.1 Encapsulation
 
+Encapsulation is the act of providing a public interface, i.e. providing the methods that can be used and how to use
+them, while hiding the implementation details. For the caller/client, encapsulation abstracts away details that they need
+not be concerned with (how an object stores its data, how it implements its methods) while providing them with the necessary
+details to use the class (the public interface). For the coder/provider, encapsulation provides a way for them to be able
+to change implementation details throughout the lifetime of the code without having to change how it's interacted with.
+That ability benefits both parties as time goes on. The less a public API changes, the less the caller/client needs to
+change their code and the more stable (from an API perspective) the code is.
 
+R8.4 Public interface
 
+As stated above, the public interface is the provided public methods of a class and information on how to interact with
+those methods. The implementation of a class encompasses all the details of the class, including how the instance variables
+are stored, the methods, their implementation details, the constructors, etc. The implementation includes everything.
+
+R8.7 Instance versus static
+
+An instance method is a method that can be invoked from an instance of a class, i.e. the object. After an instance has
+been created, they can be used. Static methods belong to the class (not to objects) and must be invoked as such, by
+using the capitalized class name followed by static method invocation.
+
+R8.8 Mutator and accessor
+
+A mutator method changes the object on which it operates. Setters are examples of mutators.
+An accessor does not change the object on which it operates. Getters are examples of accessors.
+
+R8.9 Implicit parameter
+
+The object on which a method is invoked is called the implicit parameter. The parameters that are explicitly mentioned in
+the method declaration are the explicit parameters. Each method has one implicit has exactly one implicit parameter and
+zero to many explicit parameters.
+
+R8.10 Implicit parameter
+
+See above question. Each instance method can have one implicit parameter. Since implicit parameters indicate the object
+on which the method is invoked, static methods would have no implicit parameter (since the method belongs to the class).
+Instance methods can have zero to many explicit parameters, since a method can have zero to many parameters.
+
+R8.12 Constructors
+
+There is no limit to the number of constructors a class can have, since it can continue to be overloaded. You can't have
+a class with no constructors, since, if you don't provide one, one will be provided to you (from class, the "Miranda
+Constructor"). If a class has more than one constructor, the one that gets used depends on the caller's choice of arguments
+at new instance creation time. Whichever arguments they choose/pass in will align with the constructor that gets invoked.
+
+R8.16 Instance variables
+
+The private modifier implies "private" as it relates to code outside the object that is instantiated. Only the instance
+methods that are invoked by the instance of the class have the ability to access things that are private (both variables
+and methods). So the hidden aspect refers to the fact that at run time, all things private are not able to be "seen" a.k.a.
+accessed by any code outside the instance of this class.
+
+R8.19 The this reference
+
+The this reference refers to the implicit parameter. In other words, it refers to the object itself. The most common use
+case of using this is to disambiguate variable names. This can often be seen in constructors and setters, where the parameter
+variable being passed in has the same name as the instance variable. The this reference can also be used to be clear about
+which variable or method is being referred to, even when technically unnecessary.
+
+R8.20 Zero, null, false, empty String
+
+The number zero is a value, and that value is zero. The null reference refers to no object, the value false is a boolean
+value, and the empty String is still a valid String, just with the absence of chars ("").
 
 
