@@ -24,15 +24,6 @@ public class P0_1 {
 
     }
 
-    private static String toLineNumberString(int nLine){
-        if (nLine < 1){
-            return "00:  ";
-        } else if (nLine < 10){
-            return "0" + nLine + ":  ";
-        } else {
-            return nLine + ":  ";
-        }
-    }
 
 
 
