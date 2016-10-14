@@ -26,7 +26,7 @@ public class SodaCan {
      * @return the surface area of the soda can.
      */
     public String getSurfaceArea() {
-        double dSurfaceArea = (2 * Math.PI * dRadius * dRadius) + (2 * Math.PI * dRadius * dHeight);
+        double dSurfaceArea = (2 * Math.PI * Math.pow(dRadius, 2)) + (2 * Math.PI * dRadius * dHeight);
         DecimalFormat decimalFormat = new DecimalFormat("#.0000");
         return decimalFormat.format(dSurfaceArea);
     }
@@ -36,7 +36,7 @@ public class SodaCan {
      * @return the volume of the soda can.
      */
     public String getVolume() {
-        double dVolume = Math.PI * dRadius * dRadius * dHeight;
+        double dVolume = Math.PI * Math.pow(dRadius, 2) * dHeight;
         DecimalFormat decimalFormat = new DecimalFormat("#.0000");
         return decimalFormat.format(dVolume);
     }
