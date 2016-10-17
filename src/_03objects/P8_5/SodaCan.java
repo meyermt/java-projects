@@ -22,23 +22,19 @@ public class SodaCan {
     }
 
     /**
-     * Computes the surface area of the cylindrical soda can and returns as a double. Will calculate to 4 decimal places.
+     * Computes the surface area of the cylindrical soda can and returns as a double.
      * @return the surface area of the soda can.
      */
-    public String getSurfaceArea() {
-        double dSurfaceArea = (2 * Math.PI * Math.pow(dRadius, 2)) + (2 * Math.PI * dRadius * dHeight);
-        DecimalFormat decimalFormat = new DecimalFormat("#.0000");
-        return decimalFormat.format(dSurfaceArea);
+    public double getSurfaceArea() {
+        return (2 * Math.PI * Math.pow(dRadius, 2)) + (2 * Math.PI * dRadius * dHeight);
     }
 
     /**
      * Computes the volume of the cylindrical soda can and returns as a double. Will calculate to 4 decimal places.
      * @return the volume of the soda can.
      */
-    public String getVolume() {
-        double dVolume = Math.PI * Math.pow(dRadius, 2) * dHeight;
-        DecimalFormat decimalFormat = new DecimalFormat("#.0000");
-        return decimalFormat.format(dVolume);
+    public double getVolume() {
+        return Math.PI * Math.pow(dRadius, 2) * dHeight;
     }
 
 }

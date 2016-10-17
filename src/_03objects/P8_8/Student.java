@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Representation of a student. Stores name and can do some calculation to get total quiz score, average quiz
- * score, and GPA.
+ * score, and cumulative GPA.
  * Created by michaelmeyer on 10/12/16.
  */
 public class Student {

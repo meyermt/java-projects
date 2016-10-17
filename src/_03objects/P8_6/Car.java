@@ -21,6 +21,7 @@ public class Car {
 
     /**
      * Simulates driving by calculating gas used and subtracting it from the car's gas quantity (fuel tank).
+     * Uses integer rounding.
      * @param nDistance distance to travel in the car
      */
     public void drive(int nDistance) {
