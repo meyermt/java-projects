@@ -6,7 +6,7 @@ package _04interfaces.P9_8;
  */
 public class Instructor extends Person {
 
-    private double dSalary;
+    private final double dSalary;
 
     /**
      * Constructs instructor. Must supply name, year of birth, and salary.

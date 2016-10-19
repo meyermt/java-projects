@@ -6,7 +6,7 @@ package _04interfaces.P9_8;
  */
 public class Student extends Person {
 
-    private String strMajor;
+    private final String strMajor;
 
     /**
      * Constructs student with name, year of birth, and major.

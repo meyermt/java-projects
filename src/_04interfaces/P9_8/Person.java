@@ -6,8 +6,8 @@ package _04interfaces.P9_8;
  */
 public class Person {
 
-    private String strName;
-    private int nYearOfBirth;
+    private final String strName;
+    private final int nYearOfBirth;
 
     /**
      * The only constructor for person. Must provide a name and a year of birth.
