@@ -2,6 +2,81 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R9.1 Superclas and subclass
+
+a/ Superclass: Employee, Subclass: Manager
+b/ Superclass: Student, Subclass: GraduateStudent
+c/ Superclass: Person, Subclass: Student
+d/ Superclass: Employee, Subclass: Professor
+e/ Superclass: BankAccount, Subclass: CheckingAccount
+f/ Superclass: Vehicle, Subclass: Car
+g/ Superclass: Vehicle, Subclass: Minivan
+h/ Superclass: Car, Subclass: Minivan
+i/ Superclass: Vehicle, Subclass: Truck
+
+R9.2 superclass and subclass
+
+There probably won't be many shared attributes or methods/verbs that can be defined in the SmallAppliance superclass. The
+use would be in defining these things in one place.
+
+R9.4 SavingsAccount
+
+Inherits (from superclass):
+- deposit(double amount)
+- getBalance()
+
+Overrides:
+- monthEnd()
+- withdraw(double amount)
+
+Adds:
+- setInterestRate(double rate)
+
+R9.6 Sandwich
+
+a/ legal
+b/ not legal
+c/ not legal
+d/ legal
+
+R9.7 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+
+see R9_7uml.png
+
+R9.8 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+
+see R9_8uml.png
+
+R9.9 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+
+see R9_9uml.png
+
+R9.10 Casting
+
+One is an object cast and one is a primitive cast. In the former, the cast will succeed even if the object is null and will
+compile even if the cast is a downcast that wouldn't work (and then a class cast exception is thrown at runtime).
+In the case of casting to an int, this will only succeed if not null, but a downcast will always work (even though it's
+not a great idea because of what it could do to intended values).
+
+R9.11 instanceof operator
+
+a/ true
+b/ true
+c/ false
+d/ true
+e/ true
+f/ false
+
+R9.14 Edible interface
+
+a/ legal
+b/ illegal
+c/ legal
+d/ illegal
+e/ illegal
+f/ legal
+g/ illegal
+h/ illegal
 
 
 
