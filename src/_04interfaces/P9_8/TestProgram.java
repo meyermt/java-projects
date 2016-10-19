@@ -1,6 +1,7 @@
 package _04interfaces.P9_8;
 
 /**
+ * Test driver program to prove out Person, Student, and Instructor properties, toString, and inheritance.
  * Created by michaelmeyer on 10/18/16.
  */
 public class TestProgram {
