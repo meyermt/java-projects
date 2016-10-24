@@ -46,7 +46,6 @@ public class AppointmentDriver {
                 openingMessage();
             }
         }
-        System.out.println("load options got this: " + Arrays.toString(appointments.toArray()));
         secondOption(scanner, appointments);
     }
 
@@ -99,9 +98,7 @@ public class AppointmentDriver {
      * @param appointments list of appointments comprising the appointment book.
      */
     private static void checkAppointment(LocalDate date, List<Appointment> appointments) {
-        System.out.println("Date 1 is: " + date.toString());
         for (Appointment appointment : appointments) {
-            System.out.println("Date 2 is: " + appointment.getDate().toString());
             if (appointment.occursOn(date.getYear(), date.getMonthValue(), date.getDayOfMonth())) {
                 System.out.println("Appointment on this day. Appointment info: " + appointment.toString());
             }
@@ -145,7 +142,6 @@ public class AppointmentDriver {
                 String strType = strAppointment[0];
                 String strDescription = strAppointment[1];
                 String strDate = strAppointment[2];
-                System.out.println(rawLine);
                 if (isValidType(strType) && isValidDate(strDate)) {
                     appointments.add(loadAppointment(strType, strDescription, strDate));
                 } else {

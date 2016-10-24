@@ -12,6 +12,14 @@ public abstract class Appointment {
     private final String description;
     private final LocalDate date;
 
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "description='" + description + '\'' +
+                ", date=" + date +
+                '}';
+    }
+
     /**
      * Constructs appointment. Must have description and LocalDate date.
      * @param description Description of the appointmment
@@ -58,9 +66,9 @@ public abstract class Appointment {
     public String toPrintline() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.getClass().getSimpleName());
-        builder.append("|");
+        builder.append(";");
         builder.append(this.description);
-        builder.append("|");
+        builder.append(";");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formatted = this.date.format(formatter);
         builder.append(formatted);
