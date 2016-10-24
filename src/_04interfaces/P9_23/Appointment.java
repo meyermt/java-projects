@@ -1,6 +1,7 @@
 package _04interfaces.P9_23;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Representation of an appointment, with description and date of appointment.
@@ -52,5 +53,17 @@ public abstract class Appointment {
      */
     public LocalDate getDate() {
         return date;
+    }
+
+    public String toPrintline() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getClass().getSimpleName());
+        builder.append("|");
+        builder.append(this.description);
+        builder.append("|");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formatted = this.date.format(formatter);
+        builder.append(formatted);
+        return builder.toString();
     }
 }
