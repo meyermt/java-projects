@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 /**
+ * Frame for pig game. Controls the view for the game.
  * Created by michaelmeyer on 10/29/16.
  */
 public class PigFrame extends JFrame {
@@ -23,8 +24,6 @@ public class PigFrame extends JFrame {
     private JLabel currentRoundLabel;
     private JLabel playerScoreLabel;
     private JLabel computerScoreLabel;
-    private JLabel playerTurnLabel;
-    private JLabel computerTurnLabel;
 
     private int nPlayerScore;
     private int nComputerScore;
@@ -36,8 +35,10 @@ public class PigFrame extends JFrame {
     private boolean isPlayerTurn;
     private boolean isFirstRoll;
 
+    /**
+     * Instantiates a new Pig frame. Constructs all the view elements and sets game to initial state.
+     */
     public PigFrame() {
-        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         initInfoPanel();
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -54,6 +55,9 @@ public class PigFrame extends JFrame {
         isFirstRoll = true;
     }
 
+    /*
+        Creates the info panel which shows instructions for playing the game.
+     */
     private void initInfoPanel() {
         infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
@@ -69,6 +73,9 @@ public class PigFrame extends JFrame {
         this.add(infoPanel, BorderLayout.NORTH);
     }
 
+    /*
+        Creates the start new game button.
+     */
     private void initStartButton() {
         startButton = new JButton();
         startButton.setText("Start New Game");
@@ -81,6 +88,9 @@ public class PigFrame extends JFrame {
         buttonPanel.add(startButton);
     }
 
+    /*
+        Creates the roll button for human player.
+     */
     private void initRollButton() {
         rollButton = new JButton();
         rollButton.setText("Roll Dice");
@@ -112,6 +122,9 @@ public class PigFrame extends JFrame {
         buttonPanel.add(rollButton);
     }
 
+    /*
+        Creates the hold button for human player.
+     */
     private void initHoldButton() {
         holdButton = new JButton();
         holdButton.setText("Hold (End Turn)");
@@ -135,18 +148,28 @@ public class PigFrame extends JFrame {
         buttonPanel.add(holdButton);
     }
 
+    /*
+        Creates the current round components, including text area and current points label.
+     */
     private void initCurrentRound() {
         currentRoundPanel = new JPanel();
         currentRoundPanel.setLayout(new BoxLayout(currentRoundPanel, BoxLayout.Y_AXIS));
         currentRoundPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 50, 10));
         currentRoundLabel = new JLabel();
+        JPanel currentRoundLabelPanel = new JPanel();
         currentRoundLabel.setText("Current Round Total: 0");
-        currentRoundPanel.add(currentRoundLabel);
+        currentRoundLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        currentRoundLabelPanel.add(currentRoundLabel);
         currentRound = new JTextArea();
+        currentRound.setBackground(Color.PINK);
+        currentRoundPanel.add(currentRoundLabelPanel);
         currentRoundPanel.add(currentRound);
         add(currentRoundPanel);
     }
 
+    /*
+        Creates the labels which show scores for humand and computer players.
+     */
     private void initScoreLabels() {
         scorePanel = new JPanel();
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
@@ -160,25 +183,30 @@ public class PigFrame extends JFrame {
         add(scorePanel, BorderLayout.EAST);
     }
 
+    /*
+        returns random number 1-6
+     */
     private int rollRandomDice() {
         return random.nextInt(6) + 1;
     }
 
+    /*
+        Logic for computer to take their turn. Uses the AI engine to determine how many turns to take.
+     */
     private void takeComputerTurn() {
         int nRoll = rollRandomDice();
         nRunningTotal = nRunningTotal + nRoll;
         currentRound.setText(nRoll + "\n");
         currentRoundLabel.setText("Current Round Total: " + nRunningTotal);
-        while (nRoll != 1 && pigAIEngine.willRollAgain(nRoll, nRunningTotal)
+        while (nRoll != 1 && pigAIEngine.willRollAgain()
             && (nComputerScore + nRunningTotal < 100)) {
             nRoll = rollRandomDice();
             nRunningTotal = nRunningTotal + nRoll;
-            currentRound.append(nRoll + "\n");
             currentRoundLabel.setText("Current Round Total: " + nRunningTotal);
+            currentRound.append(nRoll + "\n");
         }
         if (nRoll == 1) {
             nRunningTotal = 0;
-            currentRound.append("A 1 was rolled!");
             currentRoundLabel.setText("Current Round Total: 0");
         }
         nComputerScore = nComputerScore + nRunningTotal;
@@ -187,11 +215,16 @@ public class PigFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "You let the computer win. You are a disgrace to humanity.");
             startNewGame();
         }
+        currentRound.append("Computer gets " + nRunningTotal + ".\n");
+        currentRound.append("Your turn.");
         nRunningTotal = 0;
         isPlayerTurn = true;
         isFirstRoll = true;
     }
 
+    /*
+        Resets all relevant variables and labels to start a new game.
+     */
     private void startNewGame() {
         nRunningTotal = 0;
         nPlayerScore = 0;

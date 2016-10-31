@@ -23,6 +23,9 @@ public class OlympicRingsComponent extends JComponent {
         drawRing(280, 120, Color.GREEN, g);
     }
 
+    /*
+        Draws a ring for the olympics rings drawing.
+     */
     //solution for drawing ring thickness:
     //http://stackoverflow.com/questions/16995308/can-you-increase-line-thickness-when-using-java-graphics-for-an-applet-i-dont
     private void drawRing(int x, int y, Color color, Graphics g) {

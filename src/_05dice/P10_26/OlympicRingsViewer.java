@@ -9,7 +9,7 @@ import javax.swing.*;
 public class OlympicRingsViewer {
 
     /**
-     * The entry point of application.
+     * The entry point of application. Constructs the olympic rings component and frame for it to be viewed in.
      *
      * @param args the input arguments
      */

@@ -38,10 +38,13 @@ public class RestaurantBillFrame extends JFrame {
         createButtonComponents();
         initCustomEntry();
         initCalculateAndResetBill();
-        initBillLabels();
+        initBillArea();
         this.add(mainPanel);
     }
 
+    /*
+        Creates all the preset buttons of known menu items.
+     */
     private void createButtonComponents() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(5, 2));
@@ -51,12 +54,18 @@ public class RestaurantBillFrame extends JFrame {
         mainPanel.add(buttonPanel);
     }
 
-    private void initBillLabels() {
+    /*
+        Creates the text area where the bill shows up.
+     */
+    private void initBillArea() {
         totalArea = new JTextArea(100, 10);
         totalArea.setEditable(false);
         mainPanel.add(totalArea);
     }
 
+    /*
+        Creates the custom text fields and button for the non-preset items.
+     */
     private void initCustomEntry() {
         JPanel customEntryPanel = new JPanel();
         customEntryPanel.setLayout(new BoxLayout(customEntryPanel, BoxLayout.X_AXIS));
@@ -73,6 +82,9 @@ public class RestaurantBillFrame extends JFrame {
         mainPanel.add(customEntryPanel);
     }
 
+    /*
+        Creates the custom button used to calculate items that are not preset on the menu.
+     */
     private void initCustomButton() {
         customButton = new JButton();
         customButton.setText("Add to Bill");
@@ -91,6 +103,9 @@ public class RestaurantBillFrame extends JFrame {
         });
     }
 
+    /*
+        Checks if the custom price entered is a valid double.
+     */
     private boolean isValidPriceInput(String strPrice) {
         try {
             Double.valueOf(strPrice);
@@ -100,6 +115,9 @@ public class RestaurantBillFrame extends JFrame {
         }
     }
 
+    /*
+        Adds the buttons that calculate the total bill and reset the bill.
+     */
     private void initCalculateAndResetBill() {
         JPanel calculateBillpanel = new JPanel();
         initCalculateButton();
@@ -109,6 +127,9 @@ public class RestaurantBillFrame extends JFrame {
         mainPanel.add(calculateBillpanel);
     }
 
+    /*
+        Creates the calculate bill button
+     */
     private void initCalculateButton() {
         calculateButton = new JButton();
         calculateButton.setText("Calculate Total Bill");
@@ -122,6 +143,9 @@ public class RestaurantBillFrame extends JFrame {
         });
     }
 
+    /*
+        Creates the reset button
+     */
     private void initResetButton() {
         resetButton = new JButton();
         resetButton.setText("Reset Bill");
@@ -134,6 +158,9 @@ public class RestaurantBillFrame extends JFrame {
         });
     }
 
+    /*
+        Given a button name, menu price, and panel, adds a new preset menu button to the panel.
+     */
     private JButton addButton(String strButtonName, double dPrice, JPanel panel) {
         JButton button = new JButton(strButtonName);
         button.addActionListener(new ActionListener() {
@@ -146,6 +173,9 @@ public class RestaurantBillFrame extends JFrame {
         return button;
     }
 
+    /*
+       Given an item and its price, prints both.
+     */
     private void printItemPrice(String strItem, double dPrice) {
         //if we already totalled, the implication is that we are starting a new bill
         if (totalArea.getText().contains("Total Bill")) {

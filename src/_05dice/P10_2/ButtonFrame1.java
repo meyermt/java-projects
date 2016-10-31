@@ -38,7 +38,9 @@ public class ButtonFrame1 extends JFrame {
         }
     }
 
-    //Basically a set of init actions for the button class.
+    /**
+     * A set of init actions for the button frame.
+     */
     private void createComponents() {
         button = new JButton("I was clicked " + n + " times!");
         JPanel panel = new JPanel();
