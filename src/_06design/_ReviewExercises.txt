@@ -2,8 +2,98 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R12.1 OO Analysis and Design
+
+1 - Discover classes - Figure out "candidate" classes as within your problem domain, many times done by finding the "nouns".
+2 - Determine the responsibilities of each class - List the tasks/verbs of your classes. Often times CRC cards are used.
+3 - Describe the relationships between the classes - This includes inheritance and collaborators, and can be helpful to
+express via UML diagrams.
+
+R12.2 OO Analysis and Design
+
+See #1 of the previous question. The best way is to search for nouns in the problem description. This list of nouns can
+be changed as you continue to think through the problem. The remaining nouns are the best candidates to become classes.
+
+R12.3 OO Analysis and Design
+
+See #2 of the previous section. This can be done by taking the candidate classes and creating the tasks they are responsibile
+for. This can also be thought of as finding the verbs that those classes will do.
+
+R12.8 Relationships
+
+a/ aggregation
+b/ inheritance
+c/ inheritance
+d/ none
+e/ aggregation
+f/ inheritance
+g/ none
+h/ aggregation (since a traffic sign could have one to many colors)
+
+R12.11 CRC Cards (no need to draw them, just create a text version of the CRC card and put answers in ReviewExercises)
+
+Class: CashRegister
+Responsibilities|Collaborators
+enter payment|Coin
+get change|Coin
+calculate total|none
+void item| none
+
+Class: Coin
+Responsibilities|Collaborators
+get value|none
+get type|none
 
 
+R12.13 UML Diagram - Use the UML tool in IntelliJ. Indicate to the grader where this is located.
+
+See QuizQuestion.png for diagram
+
+R12.14 UML Diagram and CRC - Use the UML tool in IntelliJ. Indicate to the grader where this is located.
+
+We will need a driver to run the program, a representation of a Country, and something that figures out stuff with a group
+of countries (CountryCalculator)
+
+CRC:
+Class: Main/Driver
+Responsibilities|Collaborators
+read file|none
+instantiate countries|Country
+instantiate country calculator|CountryCalculator
+print results|CountryCalculator
+
+Class: Country
+Responsibilities|Collaborators
+set/get name|none
+set/get population|none
+set/get area|none
+
+Class: C
+Responsibilities|Collaborators
+sets countries|Country
+calculates country with largest area of countries|Country
+calculates country with largest population of all countries|Country
+calculates country with largest population density of all countries|Country
+
+See CountryCalculation.png for UML
+
+R12.16 Identifying objects from problem description
+
+The following classes are candidate classes for implementing this solution:
+
+- Coin
+- VendingMachine
+- Product
+- CoinType (enum)
+- Potentially a Register class of some sort that does the math for the VendingMachine
+
+R12.18 Identifying objects from problem description
+
+See Invoice.png
+
+R12.19 imports and fully qualified names
+
+This can be achieved by referring to the class using the entire package name. See BabyNames.java
 
 
 
