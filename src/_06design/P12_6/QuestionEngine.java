@@ -10,17 +10,36 @@ public class QuestionEngine {
     private String question;
     private int answer;
 
+    /**
+     * Instantiates a new Question engine.
+     */
     public QuestionEngine() {
     }
 
+    /**
+     * Gets question.
+     *
+     * @return the question
+     */
     public String getQuestion() {
         return question;
     }
 
+    /**
+     * Gets answer.
+     *
+     * @return the answer
+     */
     public int getAnswer() {
         return answer;
     }
 
+    /**
+     * Generate new question string.
+     *
+     * @param level the level
+     * @return the string
+     */
     public String generateNewQuestion(GameFrame.Levels level) {
         if (level == GameFrame.Levels.LEVEL_1) {
             return generateLevelOneQuestion();

@@ -1,12 +1,14 @@
-package _06design.P12_6;
+package _06design.P12_8;
+
+import _06design.P12_6.GameFrame;
 
 import javax.swing.*;
 
 /**
- * Main driver/viewer for the math game.
+ * Vending machine viewer class. Main driver for program.
  * Created by michaelmeyer on 11/3/16.
  */
-public class GameViewer {
+public class VendingMachineViewer {
 
     /**
      * The constant SCREEN_WIDTH.
@@ -15,17 +17,17 @@ public class GameViewer {
     /**
      * The constant SCREEN_HEIGHT.
      */
-    public static final int SCREEN_HEIGHT = 400;
+    public static final int SCREEN_HEIGHT = 600;
 
     /**
-     * The entry point of application. This will drive the game GUI.
+     * The entry point of application. This will drive the vending machine GUI.
      *
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        JFrame frame = new GameFrame();
+        JFrame frame = new VendingMachineFrame();
         frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        frame.setTitle("Math Made Fun");
+        frame.setTitle("Vending Machine");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

@@ -9,11 +9,25 @@ import static _06design.P12_6.GameViewer.SCREEN_WIDTH;
 import static _06design.P12_6.GameViewer.SCREEN_HEIGHT;
 
 /**
+ * Viewable frame for math game.
  * Created by michaelmeyer on 11/3/16.
  */
 public class GameFrame extends JFrame {
 
-    public enum Levels { LEVEL_1, LEVEL_2, LEVEL_3 };
+    /**
+     * The enum Levels.
+     */
+    public enum Levels {
+        /**
+         * Level 1 levels.
+         */
+        LEVEL_1, /**
+         * Level 2 levels.
+         */
+        LEVEL_2, /**
+         * Level 3 levels.
+         */
+        LEVEL_3 };
     private QuestionEngine questionEngine;
     private JPanel infoPanel;
     private JPanel levelPointsPanel;
@@ -29,6 +43,9 @@ public class GameFrame extends JFrame {
     private Levels level;
     private int wrongAnswers;
 
+    /**
+     * Instantiates a new Game frame.
+     */
     public GameFrame() {
         questionEngine = new QuestionEngine();
         level = Levels.LEVEL_1;
