@@ -1,5 +1,8 @@
 package _06design.P12_6;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ag
@@ -9,4 +12,8 @@ package _06design.P12_6;
  */
 public class Stub {
     //nothing implemented here
+
+    public static void main(String[] args) {
+
+    }
 }

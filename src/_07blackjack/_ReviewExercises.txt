@@ -2,6 +2,73 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R13.1 Terms
+
+Recursion is the method of solving a problem by using the solution of the same problem with simpler inputs. It also must
+have a base case under which it terminates.
+
+Iteration is the act of repeating a process. In computing, it is done with a finite number of executions of that process.
+
+Infinite recursion is recursion that does not terminate because it does not have a base case.
+
+Recursive helper methods are methods that usually hide any non-obvious details needed for recursion from the caller. They
+are the methods that will do the recursion.
+
+R13.2 Smallest value
+
+Recursive method should take an array as input and return a number value
+This method uses helper method that takes in the current min, the index, and an array.
+
+init index to 0
+min to first value in array
+
+Helper method:
+
+If the index == array.length (then we are at the end of the array)
+    return min
+else
+    if array[index] < min
+        min = array[index]
+    index++
+    return helperMethod(min, index, array)
+
+R13.3 Sort array of numbers
+
+Number of ways, will choose mergesort.
+
+Recursive method should take an array and return an array
+
+Recursive helper method mergesort and another method (non-recursive) merge
+
+mergesort takes in two arrays and two indexes representing left and right
+
+    if left less than right (still things to mergesort)
+        make a midpoint between two indices
+        call mergesort on the two arrays and pass in left and midpoint
+        call mergesort on the two arrays and pass in midpoint + 1 and right
+        call merge, which takes in arrays, left, midpoint, and right
+            merge will iterate through two subarrays and merge them into one sorted array
+
+This works by breaking the problem down into one item arrays, then merging them back into sorted arrays, from array size
+1 to 2 to 4 to 8, etc.
+
+R13.6 Exponents recursively
+
+recursive method "power" takes x and n param
+if (n == 1)
+    return x
+else
+    return x * power(x, n - 1)
+
+R13.8 Factorial recursively
+
+//requires x >= 1
+recursive method "factorial" takes x
+
+if (x == 1)
+    return x
+else
+    return x * (x - 1)
 
 
 
