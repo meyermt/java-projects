@@ -12,7 +12,7 @@ import static _07blackjack.blackjack.BlackJackViewer.SCREEN_HEIGHT;
 import static _07blackjack.blackjack.BlackJackViewer.SCREEN_WIDTH;
 
 /**
- *
+ * JFrame subclass for playing blackjack game.
  * Created by michaelmeyer on 11/12/16.
  */
 public class BlackJackFrame extends JFrame {
@@ -33,6 +33,9 @@ public class BlackJackFrame extends JFrame {
     private JLabel winningsLabel;
     private int winnings;
 
+    /**
+     * Instantiates a new Black jack frame.
+     */
     public BlackJackFrame() {
         betAmount = INITIAL_BET;
         winnings = STARTING_MONEY;
@@ -47,6 +50,9 @@ public class BlackJackFrame extends JFrame {
         this.setVisible(true);
     }
 
+    /*
+        game play panel that has buttons for options during hand.
+     */
     private void initGamePlayPanel() {
         JPanel gamePlayPanel = new JPanel();
         gamePlayPanel.setLayout(new BoxLayout(gamePlayPanel, BoxLayout.Y_AXIS));
@@ -57,6 +63,9 @@ public class BlackJackFrame extends JFrame {
         this.add(gamePlayPanel, BorderLayout.CENTER);
     }
 
+    /*
+        hit button. can only be used during hand, not after one has ended.
+     */
     private void setHitButton(JPanel gamePlayPanel) {
         JButton hitButton = new JButton();
         hitButton.setText("Hit");
@@ -70,11 +79,7 @@ public class BlackJackFrame extends JFrame {
                     playerHand.add(dealer.drawCard());
                     playerCards.setNewPlayerHand(playerHand);
                     if (dealer.isBustedHand(playerHand)) {
-                        JOptionPane.showMessageDialog(null, "Oh no, you busted! Dealer wins!");
-                        dealerCards.setNewPlayerHand(dealerHand);
-                        winnings = winnings - betAmount;
-                        winningsLabel.setText("Current Cash: $" + winnings);
-                        isNewHandAvailable = true;
+                        bustSequence();
                     }
                 }
             }
@@ -82,6 +87,17 @@ public class BlackJackFrame extends JFrame {
         gamePlayPanel.add(hitButton);
     }
 
+    private void bustSequence() {
+        JOptionPane.showMessageDialog(null, "Oh no, you busted! Dealer wins!");
+        dealerCards.setNewPlayerHand(dealerHand);
+        winnings = winnings - betAmount;
+        winningsLabel.setText("Current Cash: $" + winnings);
+        isNewHandAvailable = true;
+    }
+
+    /*
+        stand button. can only be used during turn pre-bust, not after one has ended.
+     */
     private void setStandButton(JPanel gamePlayPanel) {
         JButton standButton = new JButton();
         standButton.setText("Stand");
@@ -99,6 +115,9 @@ public class BlackJackFrame extends JFrame {
         gamePlayPanel.add(standButton);
     }
 
+    /*
+        uses dealer to help take dealer's turn and reset any visual elements.
+     */
     private void takeDealerTurn(int playerScore) {
         dealerHand = dealer.takeTurn(dealerHand);
         dealerCards.setNewPlayerHand(dealerHand);
@@ -119,20 +138,27 @@ public class BlackJackFrame extends JFrame {
         isNewHandAvailable = true;
     }
 
+    /*
+        double down button. can only be used right after hand dealt before any hits, not after one has ended.
+     */
     private void setDoubleDownButton(JPanel gamePlayPanel) {
         JButton ddButton = new JButton();
         ddButton.setText("Double Down");
         ddButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (canDoubleDown) {
+                if (canDoubleDown && !isNewHandAvailable) {
                     betAmount = betAmount * 2;
                     amountLabel.setText("Current Bet: $" + betAmount);
                     if (hasFunds()) {
                         playerHand.add(dealer.drawCard());
                         playerCards.setNewPlayerHand(playerHand);
-                        int playerScore = dealer.addOptimalScore(playerHand);
-                        takeDealerTurn(playerScore);
+                        if (dealer.isBustedHand(playerHand)) {
+                            bustSequence();
+                        } else {
+                            int playerScore = dealer.addOptimalScore(playerHand);
+                            takeDealerTurn(playerScore);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "Not enough funds to double down.");
                     }
@@ -146,6 +172,9 @@ public class BlackJackFrame extends JFrame {
         gamePlayPanel.add(ddButton);
     }
 
+    /*
+        dealer panel is all which have dealer cards and Dealer text.
+     */
     private void initDealerPanel() {
         JPanel dealerPanel = new JPanel();
         dealerPanel.setLayout(new BoxLayout(dealerPanel, BoxLayout.Y_AXIS));
@@ -157,6 +186,9 @@ public class BlackJackFrame extends JFrame {
         this.add(dealerPanel, BorderLayout.NORTH);
     }
 
+    /*
+        betting panel has all money information as well as new deal button.
+     */
     private void initBettingPanel() {
         JPanel bettingPanel = new JPanel();
         bettingPanel.setLayout(new BoxLayout(bettingPanel, BoxLayout.Y_AXIS));
@@ -174,6 +206,9 @@ public class BlackJackFrame extends JFrame {
         bettingPanel.add(winningsLabel);
     }
 
+    /*
+        allows user to set the amount they would like to bet between rounds.
+     */
     private void setBetFieldButton(JPanel bettingPanel) {
         amountLabel = new JLabel();
         amountLabel.setText("Current Bet: $" + INITIAL_BET);
@@ -202,6 +237,9 @@ public class BlackJackFrame extends JFrame {
         bettingPanel.add(betButton);
     }
 
+    /*
+        helper method to check if String can be parsed to int.
+     */
     private boolean isInt(String strInt) {
         try {
             Integer.valueOf(strInt);
@@ -211,6 +249,9 @@ public class BlackJackFrame extends JFrame {
         }
     }
 
+    /*
+        deal button. used to deal a new hand and start the round.
+     */
     private void setDealButton(JPanel bettingPanel) {
         JButton dealButton = new JButton();
         dealButton.setText("Deal Hand");
@@ -238,6 +279,9 @@ public class BlackJackFrame extends JFrame {
         bettingPanel.add(dealButton);
     }
 
+    /*
+        checks if a user has enough funds to cover their bet.
+     */
     private boolean hasFunds() {
         if (betAmount > winnings) {
             return false;
@@ -246,6 +290,9 @@ public class BlackJackFrame extends JFrame {
         }
     }
 
+    /*
+        includes player cards and Player text.
+     */
     private void initPlayerPanel() {
         JPanel playerPanel = new JPanel();
         playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.Y_AXIS));

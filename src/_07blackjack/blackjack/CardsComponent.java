@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Visual element for the player/dealer and their hands.
  * Created by michaelmeyer on 11/12/16.
  */
 public class CardsComponent extends JComponent {
@@ -16,10 +17,20 @@ public class CardsComponent extends JComponent {
     private List<Image> images = new ArrayList<>();
     private String name;
 
+    /**
+     * Instantiates a new Cards component. Must pass in a String to label whose cards these are.
+     *
+     * @param name the name
+     */
     public CardsComponent(String name) {
         this.name = name;
     }
 
+    /**
+     * Sets new dealer hand. This will keep the first card hidden.
+     *
+     * @param hand the hand
+     */
     public void setNewDealerHand(List<Card> hand) {
         images.clear();
         for (int i = 0; i < hand.size(); i++) {
@@ -35,6 +46,11 @@ public class CardsComponent extends JComponent {
         repaint();
     }
 
+    /**
+     * Sets new player hand. All cards are shown here. This can be called repetitively as new cards are drawn.
+     *
+     * @param hand the hand
+     */
     public void setNewPlayerHand(List<Card> hand) {
         images.clear();
         for (int i = 0; i < hand.size(); i++) {
@@ -50,14 +66,18 @@ public class CardsComponent extends JComponent {
         super.paintComponent(g);
         int x = 10;
         int y = 10;
+        //separate cards then draw them
         for (Image image : images) {
             g.drawImage(image, x, y, null);
             x = x + 85;
         }
-        //new experimental
+        //prints name
         g.drawChars(name.toCharArray(), 0, 6, 10, 275);
     }
 
+    /*
+        Reads new cards from directory.
+     */
     private Image readCard(Card card) {
         try {
             return ImageIO.read(new File("playingcards/" + card.getValue().toString() + card.getSuit().toString() + ".png"));
@@ -66,6 +86,9 @@ public class CardsComponent extends JComponent {
         }
     }
 
+    /*
+        Resizes card to be uniform and fit on screen.
+     */
     private Image sizeCard(Image image) {
         return image.getScaledInstance(75, 100, 0);
     }
