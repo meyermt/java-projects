@@ -5,47 +5,41 @@ import _08final.mvc.view.GamePanel;
 import _08final.sounds.Sound;
 
 import javax.sound.sampled.Clip;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 // ===============================================
 // == This Game class is the CONTROLLER
 // ===============================================
 
-public class Game implements Runnable, KeyListener {
+public class Game implements Runnable, KeyListener, MouseMotionListener, MouseListener {
 
 	// ===============================================
 	// FIELDS
 	// ===============================================
 
-	public static final Dimension DIM = new Dimension(1100, 900); //the dimension of the game.
+	private final Set<Integer> pressedKeys = new HashSet<Integer>();
+	public static final Dimension DIM = new Dimension(1120, 660); //the dimension of the game.
 	private GamePanel gmpPanel;
 	public static Random R = new Random();
+	public static final double SAINT_X_TERRITORY = Game.DIM.getWidth() - (Game.DIM.getWidth() / 2);
+	public final static int SAINTS_PER_COLUMN = 5;
 	public final static int ANI_DELAY = 45; // milliseconds between screen
-											// updates (animation)
+	// updates (animation)
 	private Thread thrAnim;
 	private int nLevel = 1;
 	private int nTick = 0;
 
 	private boolean bMuted = true;
-	
+
 
 	private final int PAUSE = 80, // p key
-			QUIT = 81, // q key
-			LEFT = 37, // rotate left; left arrow
-			RIGHT = 39, // rotate right; right arrow
-			UP = 38, // thrust; up arrow
-			START = 83, // s key
-			FIRE = 32, // space key
-			MUTE = 77, // m-key mute
-
-	// for possible future use
-	// HYPER = 68, 					// d key
-	// SHIELD = 65, 				// a key arrow
-	// NUM_ENTER = 10, 				// hyp
-	 SPECIAL = 70; 					// fire special weapon;  F key
+			START = KeyEvent.VK_ENTER, // s key
+			SPECIAL = 70; 					// fire special weapon;  F key
 
 	private Clip clpThrust;
 	private Clip clpMusicBackground;
@@ -62,9 +56,11 @@ public class Game implements Runnable, KeyListener {
 
 		gmpPanel = new GamePanel(DIM);
 		gmpPanel.addKeyListener(this);
+		gmpPanel.addMouseListener(this);
+		gmpPanel.addMouseMotionListener(this);
 		clpThrust = Sound.clipForLoopFactory("whitenoise.wav");
 		clpMusicBackground = Sound.clipForLoopFactory("music-background.wav");
-	
+
 
 	}
 
@@ -74,16 +70,16 @@ public class Game implements Runnable, KeyListener {
 
 	public static void main(String args[]) {
 		EventQueue.invokeLater(new Runnable() { // uses the Event dispatch thread from Java 5 (refactored)
-					public void run() {
-						try {
-							Game game = new Game(); // construct itself
-							game.fireUpAnimThread();
+			public void run() {
+				try {
+					Game game = new Game(); // construct itself
+					game.fireUpAnimThread();
 
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	private void fireUpAnimThread() { // called initially
@@ -106,13 +102,14 @@ public class Game implements Runnable, KeyListener {
 		// this thread animates the scene
 		while (Thread.currentThread() == thrAnim) {
 			tick();
-			spawnNewShipFloater();
-			gmpPanel.update(gmpPanel.getGraphics()); // update takes the graphics context we must 
-														// surround the sleep() in a try/catch block
-														// this simply controls delay time between 
-														// the frames of the animation
+			gmpPanel.update(gmpPanel.getGraphics()); // update takes the graphics context we must
+			// surround the sleep() in a try/catch block
+			// this simply controls delay time between
+			// the frames of the animation
 
 			//this might be a good place to check for collisions
+			directSaintsAndGetSaintBalls();
+			throwSaintBalls();
 			checkCollisions();
 			//this might be a god place to check if the level is clear (no more foes)
 			//if the level is clear then spawn some big asteroids -- the number of asteroids 
@@ -133,15 +130,59 @@ public class Game implements Runnable, KeyListener {
 		} // end while
 	} // end run
 
+	/*
+		Here we will guide Saints to go get a ball
+	 */
+	private void directSaintsAndGetSaintBalls() {
+		for (Movable movNeutral : CommandCenter.getInstance().getMovNeutrals()) {
+			double neutralX = movNeutral.getCenter().getX();
+			//is the ball retrievable for one of our saints
+			if (neutralX >= SAINT_X_TERRITORY) {
+				//find a saint that should get it and direct them
+				//making a saint off the map, because nearest will always be there, won't matter
+				Saint saint = new Saint();
+				double nearest = Double.MAX_VALUE;
+				for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+					if (movFoe instanceof Saint) {
+						double xDiff = movFoe.getCenter().getX() - movNeutral.getCenter().getX();
+						double yDiff = movFoe.getCenter().getY() - movNeutral.getCenter().getY();
+						if (Math.hypot(xDiff, yDiff) < nearest) {
+							saint = (Saint) movFoe;
+						}
+					}
+				}
+				Ball ball = (Ball) movNeutral;
+				saint.retrieveBall(ball);
+				ball.hasFoeRetriever = true;
+			}
+		}
+	}
+
+	private void throwSaintBalls() {
+		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+			if (movFoe instanceof Saint) {
+				Saint saint = (Saint) movFoe;
+				if (saint.hasBall && nTick % saint.getThrowingCadence() == 0) {
+					Diablo diablo = CommandCenter.getInstance().getDiablo();
+					saint.hasBall = false;
+					saint.isThrowing = false;
+					saint.isReleasingThrow = true;
+					saint.getBall().hasFoeRetriever = false;
+					saint.setBall(null);
+					CommandCenter.getInstance().getOpsList().enqueue(new Ball(saint, (int) diablo.getCenter().getX(), (int) diablo.getCenter().getY()), CollisionOp.Operation.ADD);
+				}
+			}
+		}
+	}
+
 	private void checkCollisions() {
-
-		
-
-		Point pntFriendCenter, pntFoeCenter;
-		int nFriendRadiux, nFoeRadiux;
+		Point pntFriendCenter, pntFoeCenter, pntNeutralCenter;
+		int nFriendRadiux, nFoeRadiux, nNeutralRadiux;
 
 		for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
+			processDeadBalls(movFriend);
 			for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+				processDeadBalls(movFoe);
 
 				pntFriendCenter = movFriend.getCenter();
 				pntFoeCenter = movFoe.getCenter();
@@ -151,49 +192,49 @@ public class Game implements Runnable, KeyListener {
 				//detect collision
 				if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux)) {
 
-					//falcon
-					if ((movFriend instanceof Falcon) ){
-						if (!CommandCenter.getInstance().getFalcon().getProtected()){
-							CommandCenter.getInstance().getOpsList().enqueue(movFriend, CollisionOp.Operation.REMOVE);
-							CommandCenter.getInstance().spawnFalcon(false);
-
-						}
-					}
-					//not the falcon
-					else {
-						CommandCenter.getInstance().getOpsList().enqueue(movFriend, CollisionOp.Operation.REMOVE);
-					}//end else
-					//kill the foe and if asteroid, then spawn new asteroids
 					killFoe(movFoe);
-					Sound.playSound("kapow.wav");
+					//Sound.playSound("kapow.wav");
 
 				}//end if 
 			}//end inner for
 		}//end outer for
 
+		//all non-held balls are moved back to neutrals. check if they are being picked up
+		for (Movable neutral : CommandCenter.getInstance().getMovNeutrals()) {
+			for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
+				pntFriendCenter = movFriend.getCenter();
+				pntNeutralCenter = neutral.getCenter();
+				nFriendRadiux = movFriend.getRadius();
+				nNeutralRadiux = neutral.getRadius();
+				if (pntFriendCenter.distance(pntNeutralCenter) < (nFriendRadiux + nNeutralRadiux)) {
+					if (movFriend instanceof Diablo && neutral instanceof Ball) {
+						Diablo diablo = (Diablo) movFriend;
+						if (diablo.isCatching && !diablo.hasBall) {
+							diablo.hasBall = true;
+							CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
+						}
+					}
+				}
+			}
 
-		//check for collisions between falcon and floaters
-		if (CommandCenter.getInstance().getFalcon() != null){
-			Point pntFalCenter = CommandCenter.getInstance().getFalcon().getCenter();
-			int nFalRadiux = CommandCenter.getInstance().getFalcon().getRadius();
-			Point pntFloaterCenter;
-			int nFloaterRadiux;
-			
-			for (Movable movFloater : CommandCenter.getInstance().getMovFloaters()) {
-				pntFloaterCenter = movFloater.getCenter();
-				nFloaterRadiux = movFloater.getRadius();
-	
-				//detect collision
-				if (pntFalCenter.distance(pntFloaterCenter) < (nFalRadiux + nFloaterRadiux)) {
-
-					CommandCenter.getInstance().getOpsList().enqueue(movFloater, CollisionOp.Operation.REMOVE);
-					Sound.playSound("pacman_eatghost.wav");
-	
-				}//end if 
-			}//end inner for
-		}//end if not null
-		
-
+			for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+				pntFoeCenter = movFoe.getCenter();
+				pntNeutralCenter = neutral.getCenter();
+				nFoeRadiux = movFoe.getRadius();
+				nNeutralRadiux = neutral.getRadius();
+				if (pntFoeCenter.distance(pntNeutralCenter) < (nFoeRadiux + nNeutralRadiux)) {
+					if (movFoe instanceof Saint && neutral instanceof Ball) {
+						Saint saint = (Saint) movFoe;
+						if (!saint.hasBall) {
+							saint.hasBall = true;
+							saint.isRetrieving = false;
+							saint.setBall((Ball) neutral);
+							CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
+						}
+					}
+				}
+			}
+		}
 
 		//we are dequeuing the opsList and performing operations in serial to avoid mutating the movable arraylists while iterating them above
 		while(!CommandCenter.getInstance().getOpsList().isEmpty()){
@@ -234,38 +275,34 @@ public class Game implements Runnable, KeyListener {
 					}
 					break;
 
+				case NEUTRAL:
+					if (operation == CollisionOp.Operation.ADD){
+						CommandCenter.getInstance().getMovNeutrals().add(mov);
+					} else {
+						CommandCenter.getInstance().getMovNeutrals().remove(mov);
+					}
+					break;
+
 
 			}
 
 		}
 		//a request to the JVM is made every frame to garbage collect, however, the JVM will choose when and how to do this
 		System.gc();
-		
+
 	}//end meth
 
-	private void killFoe(Movable movFoe) {
-		
-		if (movFoe instanceof Asteroid){
-
-			//we know this is an Asteroid, so we can cast without threat of ClassCastException
-			Asteroid astExploded = (Asteroid)movFoe;
-			//big asteroid 
-			if(astExploded.getSize() == 0){
-				//spawn two medium Asteroids
-				CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(astExploded), CollisionOp.Operation.ADD);
-				CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(astExploded), CollisionOp.Operation.ADD);
-
-			} 
-			//medium size aseroid exploded
-			else if(astExploded.getSize() == 1){
-				//spawn three small Asteroids
-				CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(astExploded), CollisionOp.Operation.ADD);
-				CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(astExploded), CollisionOp.Operation.ADD);
-				CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(astExploded), CollisionOp.Operation.ADD);
-
+	private void processDeadBalls(Movable mov) {
+		if (mov instanceof Ball) {
+			Ball ball = (Ball) mov;
+			if (!ball.isMoving) {
+				CommandCenter.getInstance().getOpsList().enqueue(mov, CollisionOp.Operation.REMOVE);
+				CommandCenter.getInstance().getOpsList().enqueue(new Ball(mov.getCenter()), CollisionOp.Operation.ADD);
 			}
+		}
+	}
 
-		} 
+	private void killFoe(Movable movFoe) {
 
 		//remove the original Foe
 		CommandCenter.getInstance().getOpsList().enqueue(movFoe, CollisionOp.Operation.REMOVE);
@@ -285,12 +322,18 @@ public class Game implements Runnable, KeyListener {
 		return nTick;
 	}
 
-	private void spawnNewShipFloater() {
-		//make the appearance of power-up dependent upon ticks and levels
-		//the higher the level the more frequent the appearance
-		if (nTick % (SPAWN_NEW_SHIP_FLOATER - nLevel * 7) == 0) {
-			//CommandCenter.getInstance().getMovFloaters().enqueue(new NewShipFloater());
-			CommandCenter.getInstance().getOpsList().enqueue(new NewShipFloater(), CollisionOp.Operation.ADD);
+	private void spawnSaints(int numSaints) {
+		int columns = (numSaints + SAINTS_PER_COLUMN - 1) / SAINTS_PER_COLUMN;
+		for (int i = 1; i <= numSaints; i++) {
+			int column = (i + SAINTS_PER_COLUMN - 1) / SAINTS_PER_COLUMN;
+			double columnSpacing = (Game.DIM.getWidth() / 2) / (columns + 1);
+			double x = Game.DIM.getWidth() - (Game.DIM.getWidth() / 2) + (columnSpacing * column);
+			double rowSpacing = (Game.DIM.getHeight() / (SAINTS_PER_COLUMN + 1));
+			int yPos = (i % SAINTS_PER_COLUMN) == 0 ? 5 : (i % SAINTS_PER_COLUMN);
+			double y = yPos * rowSpacing;
+			Point startingPoint = new Point((int) x, (int) y);
+			Saint saint = new Saint(startingPoint);
+			CommandCenter.getInstance().getOpsList().enqueue(saint, CollisionOp.Operation.ADD);
 		}
 	}
 
@@ -301,49 +344,40 @@ public class Game implements Runnable, KeyListener {
 		CommandCenter.getInstance().setLevel(0);
 		CommandCenter.getInstance().setPlaying(true);
 		CommandCenter.getInstance().setPaused(false);
+		spawnSaints(1);
 		//if (!bMuted)
-		   // clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
+		// clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
-	//this method spawns new asteroids
-	private void spawnAsteroids(int nNum) {
-		for (int nC = 0; nC < nNum; nC++) {
-			//Asteroids with size of zero are big
-			CommandCenter.getInstance().getOpsList().enqueue(new Asteroid(0), CollisionOp.Operation.ADD);
-
-		}
-	}
-	
-	
 	private boolean isLevelClear(){
 		//if there are no more Asteroids on the screen
-		boolean bAsteroidFree = true;
-		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-			if (movFoe instanceof Asteroid){
-				bAsteroidFree = false;
-				break;
-			}
-		}
-		
-		return bAsteroidFree;
-
-		
+//		boolean bAsteroidFree = true;
+//		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+//			if (movFoe instanceof Asteroid){
+//				bAsteroidFree = false;
+//				break;
+//			}
+//		}
+//
+//		return bAsteroidFree;
+		//my code to stay on level
+		return false;
 	}
-	
+
 	private void checkNewLevel(){
-		
-		if (isLevelClear() ){
-			if (CommandCenter.getInstance().getFalcon() !=null)
-				CommandCenter.getInstance().getFalcon().setProtected(true);
-			
-			spawnAsteroids(CommandCenter.getInstance().getLevel() + 2);
-			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
 
-		}
+//		if (isLevelClear() ){
+//			if (CommandCenter.getInstance().getFalcon() !=null)
+//				CommandCenter.getInstance().getFalcon().setProtected(true);
+//
+//			spawnAsteroids(CommandCenter.getInstance().getLevel() + 2);
+//			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
+//
+//		}
 	}
-	
-	
-	
+
+
+
 
 	// Varargs for stopping looping-music-clips
 	private static void stopLoopingSounds(Clip... clpClips) {
@@ -358,94 +392,50 @@ public class Game implements Runnable, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		Falcon fal = CommandCenter.getInstance().getFalcon();
+		Diablo diablo = CommandCenter.getInstance().getDiablo();
 		int nKey = e.getKeyCode();
-		// System.out.println(nKey);
+		pressedKeys.add(nKey);
 
 		if (nKey == START && !CommandCenter.getInstance().isPlaying())
 			startGame();
 
-		if (fal != null) {
-
-			switch (nKey) {
-			case PAUSE:
-				CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
-				if (CommandCenter.getInstance().isPaused())
-					stopLoopingSounds(clpMusicBackground, clpThrust);
-				else
-					clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
-				break;
-			case QUIT:
-				System.exit(0);
-				break;
-			case UP:
-				fal.thrustOn();
-				if (!CommandCenter.getInstance().isPaused())
-					clpThrust.loop(Clip.LOOP_CONTINUOUSLY);
-				break;
-			case LEFT:
-				fal.rotateLeft();
-				break;
-			case RIGHT:
-				fal.rotateRight();
-				break;
-
-			// possible future use
-			// case KILL:
-			// case SHIELD:
-			// case NUM_ENTER:
-
-			default:
-				break;
+		if (diablo != null) {
+			for (Integer pressedKey : pressedKeys) {
+				if (pressedKey == KeyEvent.VK_UP) {
+					diablo.walkingUp = true;
+				}
+				if (pressedKey == KeyEvent.VK_DOWN) {
+					diablo.walkingDown = true;
+				}
+				if (pressedKey == KeyEvent.VK_LEFT) {
+					diablo.walkingLeft = true;
+				}
+				if (pressedKey == KeyEvent.VK_RIGHT) {
+					diablo.walkingRight = true;
+				}
 			}
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		Falcon fal = CommandCenter.getInstance().getFalcon();
-		int nKey = e.getKeyCode();
-		 System.out.println(nKey);
+		Diablo diablo = CommandCenter.getInstance().getDiablo();
+		int releasedKey = e.getKeyCode();
 
-		if (fal != null) {
-			switch (nKey) {
-			case FIRE:
-				CommandCenter.getInstance().getOpsList().enqueue(new Bullet(fal), CollisionOp.Operation.ADD);
-				Sound.playSound("laser.wav");
-				break;
-				
-			//special is a special weapon, current it just fires the cruise missile. 
-			case SPECIAL:
-				CommandCenter.getInstance().getOpsList().enqueue(new Cruise(fal), CollisionOp.Operation.ADD);
-				//Sound.playSound("laser.wav");
-				break;
-				
-			case LEFT:
-				fal.stopRotating();
-				break;
-			case RIGHT:
-				fal.stopRotating();
-				break;
-			case UP:
-				fal.thrustOff();
-				clpThrust.stop();
-				break;
-				
-			case MUTE:
-				if (!bMuted){
-					stopLoopingSounds(clpMusicBackground);
-					bMuted = !bMuted;
-				} 
-				else {
-					clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
-					bMuted = !bMuted;
-				}
-				break;
-				
-				
-			default:
-				break;
+		if (diablo != null) {
+			if (releasedKey == KeyEvent.VK_UP) {
+				diablo.walkingUp = false;
 			}
+			if (releasedKey == KeyEvent.VK_DOWN) {
+				diablo.walkingDown = false;
+			}
+			if (releasedKey == KeyEvent.VK_LEFT) {
+				diablo.walkingLeft = false;
+			}
+			if (releasedKey == KeyEvent.VK_RIGHT) {
+				diablo.walkingRight = false;
+			}
+			pressedKeys.remove(releasedKey);
 		}
 	}
 
@@ -454,6 +444,57 @@ public class Game implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		Diablo diablo = CommandCenter.getInstance().getDiablo();
+		if (SwingUtilities.isLeftMouseButton(e)) {
+			if (diablo.hasBall && !diablo.isCatching) {
+				diablo.isThrowing = true;
+			}
+		} else if (SwingUtilities.isRightMouseButton(e)) {
+			if (!diablo.hasBall) {
+				diablo.isCatching = true;
+			}
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		Diablo diablo = CommandCenter.getInstance().getDiablo();
+		if (SwingUtilities.isLeftMouseButton(e)) {
+			if (diablo.hasBall) {
+				diablo.hasBall = false;
+				diablo.isThrowing = false;
+				diablo.isReleasingThrow = true;
+				CommandCenter.getInstance().getOpsList().enqueue(new Ball(diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
+			}
+		} else if (SwingUtilities.isRightMouseButton(e)) {
+			diablo.isCatching = false;
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+
+	}
 }
 
 

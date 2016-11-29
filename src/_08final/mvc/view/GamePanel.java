@@ -2,10 +2,13 @@ package _08final.mvc.view;
 
 import _08final.mvc.controller.Game;
 import _08final.mvc.model.CommandCenter;
-import _08final.mvc.model.Falcon;
 import _08final.mvc.model.Movable;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -85,15 +88,18 @@ public class GamePanel extends Panel {
 		
 		//playing and not paused!
 		else {
-			
+			//if we are playing, we know we can draw the arena
+			grpOff.drawImage(readBackground(), 0, 0, null);
+
 			//draw them in decreasing level of importance
 			//friends will be on top layer and debris on the bottom
 			iterateMovables(grpOff,
+					(ArrayList<Movable>) CommandCenter.getInstance().getMovNeutrals(),
 					(ArrayList<Movable>)  CommandCenter.getInstance().getMovFriends(),
 					(ArrayList<Movable>)  CommandCenter.getInstance().getMovFoes(),
 					(ArrayList<Movable>)  CommandCenter.getInstance().getMovFloaters(),
 					(ArrayList<Movable>)  CommandCenter.getInstance().getMovDebris());
-
+;
 
 			drawNumberShipsLeft(grpOff);
 			if (CommandCenter.getInstance().isGameOver()) {
@@ -103,16 +109,25 @@ public class GamePanel extends Panel {
 		}
 		//draw the double-Buffered Image to the graphics context of the panel
 		g.drawImage(imgOff, 0, 0, this);
-	} 
+	}
+
+	private BufferedImage readBackground() {
+		BufferedImage someImage = null;
+		try {
+			someImage = ImageIO.read(new File("dball-arena.bmp"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return someImage;
+	}
 
 
 	
 	//for each movable array, process it.
 	private void iterateMovables(Graphics g, ArrayList<Movable>...movMovz){
-		
 		for (ArrayList<Movable> movMovs : movMovz) {
 			for (Movable mov : movMovs) {
-
 				mov.move();
 				mov.draw(g);
 
@@ -124,32 +139,32 @@ public class GamePanel extends Panel {
 
 	// Draw the number of falcons left on the bottom-right of the screen. 
 	private void drawNumberShipsLeft(Graphics g) {
-		Falcon fal = CommandCenter.getInstance().getFalcon();
-		double[] dLens = fal.getLengths();
-		int nLen = fal.getDegrees().length;
-		Point[] pntMs = new Point[nLen];
-		int[] nXs = new int[nLen];
-		int[] nYs = new int[nLen];
-	
-		//convert to cartesean points
-		for (int nC = 0; nC < nLen; nC++) {
-			pntMs[nC] = new Point((int) (10 * dLens[nC] * Math.sin(Math
-					.toRadians(90) + fal.getDegrees()[nC])),
-					(int) (10 * dLens[nC] * Math.cos(Math.toRadians(90)
-							+ fal.getDegrees()[nC])));
-		}
-		
-		//set the color to white
-		g.setColor(Color.white);
-		//for each falcon left (not including the one that is playing)
-		for (int nD = 1; nD < CommandCenter.getInstance().getNumFalcons(); nD++) {
-			//create x and y values for the objects to the bottom right using cartesean points again
-			for (int nC = 0; nC < fal.getDegrees().length; nC++) {
-				nXs[nC] = pntMs[nC].x + Game.DIM.width - (20 * nD);
-				nYs[nC] = pntMs[nC].y + Game.DIM.height - 40;
-			}
-			g.drawPolygon(nXs, nYs, nLen);
-		} 
+//		Falcon fal = CommandCenter.getInstance().getFalcon();
+//		double[] dLens = fal.getLengths();
+//		int nLen = fal.getDegrees().length;
+//		Point[] pntMs = new Point[nLen];
+//		int[] nXs = new int[nLen];
+//		int[] nYs = new int[nLen];
+//
+//		//convert to cartesean points
+//		for (int nC = 0; nC < nLen; nC++) {
+//			pntMs[nC] = new Point((int) (10 * dLens[nC] * Math.sin(Math
+//					.toRadians(90) + fal.getDegrees()[nC])),
+//					(int) (10 * dLens[nC] * Math.cos(Math.toRadians(90)
+//							+ fal.getDegrees()[nC])));
+//		}
+//
+//		//set the color to white
+//		g.setColor(Color.white);
+//		//for each falcon left (not including the one that is playing)
+//		for (int nD = 1; nD < CommandCenter.getInstance().getNumFalcons(); nD++) {
+//			//create x and y values for the objects to the bottom right using cartesean points again
+//			for (int nC = 0; nC < fal.getDegrees().length; nC++) {
+//				nXs[nC] = pntMs[nC].x + Game.DIM.width - (20 * nD);
+//				nYs[nC] = pntMs[nC].y + Game.DIM.height - 40;
+//			}
+//			g.drawPolygon(nXs, nYs, nLen);
+//		}
 	}
 	
 	private void initView() {
@@ -178,7 +193,7 @@ public class GamePanel extends Panel {
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 80);
 
-		strDisplay = "'S' to Start";
+		strDisplay = "'Enter' to Start";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 120);

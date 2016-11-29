@@ -1,7 +1,5 @@
 package _08final.mvc.model;
 
-import _08final.sounds.Sound;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +9,16 @@ public class CommandCenter {
 	private  int nNumFalcon;
 	private  int nLevel;
 	private  long lScore;
-	private  Falcon falShip;
+	private Diablo diablo;
 	private  boolean bPlaying;
 	private  boolean bPaused;
 	
 	// These ArrayLists with capacities set
-	private List<Movable> movDebris = new ArrayList<Movable>(300);
-	private List<Movable> movFriends = new ArrayList<Movable>(100);
-	private List<Movable> movFoes = new ArrayList<Movable>(200);
-	private List<Movable> movFloaters = new ArrayList<Movable>(50);
+	private List<Movable> movDebris = new ArrayList<>(300);
+	private List<Movable> movFriends = new ArrayList<>(100);
+	private List<Movable> movFoes = new ArrayList<>(200);
+	private List<Movable> movFloaters = new ArrayList<>(50);
+	private List<Movable> movNeutrals = new ArrayList<>(50);
 
 	private GameOpsList opsList = new GameOpsList();
 
@@ -42,22 +41,33 @@ public class CommandCenter {
 		setLevel(1);
 		setScore(0);
 		setNumFalcons(3);
-		spawnFalcon(true);
+		//spawnFalcon(true);
+		spawnDiablo(true);
+		spawnBalls(3);
 	}
 	
 	// The parameter is true if this is for the beginning of the game, otherwise false
 	// When you spawn a new falcon, you need to decrement its number
-	public  void spawnFalcon(boolean bFirst) {
-		if (getNumFalcons() != 0) {
-			falShip = new Falcon();
-
-			opsList.enqueue(falShip, CollisionOp.Operation.ADD);
-			if (!bFirst)
-			    setNumFalcons(getNumFalcons() - 1);
-		}
+	public void spawnDiablo(boolean bFirst) {
+//		if (getNumFalcons() != 0) {
+//			falShip = new Falcon();
+//
+//			opsList.enqueue(falShip, CollisionOp.Operation.ADD);
+//			if (!bFirst)
+//			    setNumFalcons(getNumFalcons() - 1);
+//		}
+		diablo = new Diablo();
+		opsList.enqueue(diablo, CollisionOp.Operation.ADD);
 		
-		Sound.playSound("shipspawn.wav");
+		//Sound.playSound("shipspawn.wav");
 
+	}
+
+	public void spawnBalls(int numBalls) {
+		for (int i = 1; i <= numBalls; i++) {
+			Ball ball = new Ball(i, numBalls);
+			opsList.enqueue(ball, CollisionOp.Operation.ADD);
+		}
 	}
 
 	public GameOpsList getOpsList() {
@@ -73,6 +83,7 @@ public class CommandCenter {
 		movFriends.clear();
 		movFoes.clear();
 		movFloaters.clear();
+		movNeutrals.clear();
 	}
 
 	public  boolean isPlaying() {
@@ -121,37 +132,30 @@ public class CommandCenter {
 	public  void setNumFalcons(int nParam) {
 		nNumFalcon = nParam;
 	}
-	
-	public  Falcon getFalcon(){
-		return falShip;
-	}
-	
-	public  void setFalcon(Falcon falParam){
-		falShip = falParam;
+
+	public Diablo getDiablo() { return diablo; }
+
+	public  void setDiablo(Diablo diablo){
+		this.diablo = diablo;
 	}
 
 	public  List<Movable> getMovDebris() {
 		return movDebris;
 	}
 
-
-
 	public  List<Movable> getMovFriends() {
 		return movFriends;
 	}
-
-
 
 	public  List<Movable> getMovFoes() {
 		return movFoes;
 	}
 
-
 	public  List<Movable> getMovFloaters() {
 		return movFloaters;
 	}
 
-
+	public List<Movable> getMovNeutrals() { return movNeutrals; }
 
 
 }

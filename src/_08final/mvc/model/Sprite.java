@@ -38,6 +38,9 @@ public abstract class Sprite implements Movable {
 	private int[] nXCoords;
 	private int[] nYCoords;
 
+	//dodgeball specific - how fast a sprite can throw
+	private double throwingSpeed;
+
 
 	@Override
 	public Team getTeam() {
@@ -51,25 +54,25 @@ public abstract class Sprite implements Movable {
 
 	public void move() {
 
-		Point pnt = getCenter();
-		double dX = pnt.x + getDeltaX();
-		double dY = pnt.y + getDeltaY();
-		
-		//this just keeps the sprite inside the bounds of the frame
-		if (pnt.x > getDim().width) {
-			setCenter(new Point(1, pnt.y));
-
-		} else if (pnt.x < 0) {
-			setCenter(new Point(getDim().width - 1, pnt.y));
-		} else if (pnt.y > getDim().height) {
-			setCenter(new Point(pnt.x, 1));
-
-		} else if (pnt.y < 0) {
-			setCenter(new Point(pnt.x, getDim().height - 1));
-		} else {
-
-			setCenter(new Point((int) dX, (int) dY));
-		}
+//		Point pnt = getCenter();
+//		double dX = pnt.x + getDeltaX();
+//		double dY = pnt.y + getDeltaY();
+//
+//		//this just keeps the sprite inside the bounds of the frame
+//		if (pnt.x > getDim().width) {
+//			setCenter(new Point(1, pnt.y));
+//
+//		} else if (pnt.x < 0) {
+//			setCenter(new Point(getDim().width - 1, pnt.y));
+//		} else if (pnt.y > getDim().height) {
+//			setCenter(new Point(pnt.x, 1));
+//
+//		} else if (pnt.y < 0) {
+//			setCenter(new Point(pnt.x, getDim().height - 1));
+//		} else {
+//
+//			setCenter(new Point((int) dX, (int) dY));
+//		}
 
 	}
 
@@ -77,7 +80,7 @@ public abstract class Sprite implements Movable {
 
 	//you can override this and many more in the subclasses
 		setDim(Game.DIM);
-		setColor(Color.white);
+		//setColor(Color.white);
 		setCenter(new Point(Game.R.nextInt(Game.DIM.width),
 				Game.R.nextInt(Game.DIM.height)));
 
@@ -264,27 +267,27 @@ public abstract class Sprite implements Movable {
 
 	@Override
     public void draw(Graphics g) {
-        nXCoords = new int[dDegrees.length];
-        nYCoords = new int[dDegrees.length];
-        //need this as well
-        pntCoords = new Point[dDegrees.length];
-        
-
-        for (int nC = 0; nC < dDegrees.length; nC++) {
-            nXCoords[nC] =    (int) (getCenter().x + getRadius() 
-                            * dLengths[nC] 
-                            * Math.sin(Math.toRadians(getOrientation()) + dDegrees[nC]));
-            nYCoords[nC] =    (int) (getCenter().y - getRadius()
-                            * dLengths[nC]
-                            * Math.cos(Math.toRadians(getOrientation()) + dDegrees[nC]));
-            
-            
-            //need this line of code to create the points which we will need for debris
-            pntCoords[nC] = new Point(nXCoords[nC], nYCoords[nC]);
-        }
-
-        g.setColor(getColor());
-        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
+//        nXCoords = new int[dDegrees.length];
+//        nYCoords = new int[dDegrees.length];
+//        //need this as well
+//        pntCoords = new Point[dDegrees.length];
+//
+//
+//        for (int nC = 0; nC < dDegrees.length; nC++) {
+//            nXCoords[nC] =    (int) (getCenter().x + getRadius()
+//                            * dLengths[nC]
+//                            * Math.sin(Math.toRadians(getOrientation()) + dDegrees[nC]));
+//            nYCoords[nC] =    (int) (getCenter().y - getRadius()
+//                            * dLengths[nC]
+//                            * Math.cos(Math.toRadians(getOrientation()) + dDegrees[nC]));
+//
+//
+//            //need this line of code to create the points which we will need for debris
+//            pntCoords[nC] = new Point(nXCoords[nC], nYCoords[nC]);
+//        }
+//
+//        g.setColor(getColor());
+//        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
     }
     
 
@@ -308,4 +311,7 @@ public abstract class Sprite implements Movable {
 		nFade = n;
 	}
 
+	public void setThrowingSpeed(double throwingSpeed) { this.throwingSpeed = throwingSpeed; }
+
+	public double getThrowingSpeed() { return throwingSpeed; }
 }

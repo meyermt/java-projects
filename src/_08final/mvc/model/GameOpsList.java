@@ -1,6 +1,6 @@
 package _08final.mvc.model;
 
-import java.util.*;
+import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
 
