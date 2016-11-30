@@ -2,6 +2,7 @@ package _08final.mvc.view;
 
 import _08final.mvc.controller.Game;
 import _08final.mvc.model.CommandCenter;
+import _08final.mvc.model.Diablo;
 import _08final.mvc.model.Movable;
 
 import javax.imageio.ImageIO;
@@ -24,8 +25,8 @@ public class GamePanel extends Panel {
 	private Graphics grpOff;
 	
 	private GameFrame gmf;
-	private Font fnt = new Font("SansSerif", Font.BOLD, 12);
-	private Font fntBig = new Font("SansSerif", Font.BOLD + Font.ITALIC, 36);
+	private Font fnt = new Font("Monospaced", Font.BOLD, 30);
+	private Font fntBig = new Font("Monospaced", Font.BOLD + Font.ITALIC, 36);
 	private FontMetrics fmt; 
 	private int nFontWidth;
 	private int nFontHeight;
@@ -60,7 +61,7 @@ public class GamePanel extends Panel {
 		if (CommandCenter.getInstance().getScore() != 0) {
 			g.drawString("SCORE :  " + CommandCenter.getInstance().getScore(), nFontWidth, nFontHeight);
 		} else {
-			g.drawString("NO SCORE", nFontWidth, nFontHeight);
+			g.drawString("NO SCORE", nFontWidth, (int) Game.DIM.getHeight() - 50);
 		}
 	}
 	
@@ -101,7 +102,7 @@ public class GamePanel extends Panel {
 					(ArrayList<Movable>)  CommandCenter.getInstance().getMovDebris());
 ;
 
-			drawNumberShipsLeft(grpOff);
+			drawNumberDiablosLeft(grpOff);
 			if (CommandCenter.getInstance().isGameOver()) {
 				CommandCenter.getInstance().setPlaying(false);
 				//bPlaying = false;
@@ -130,41 +131,20 @@ public class GamePanel extends Panel {
 			for (Movable mov : movMovs) {
 				mov.move();
 				mov.draw(g);
-
 			}
 		}
 		
 	}
-	
 
 	// Draw the number of falcons left on the bottom-right of the screen. 
-	private void drawNumberShipsLeft(Graphics g) {
-//		Falcon fal = CommandCenter.getInstance().getFalcon();
-//		double[] dLens = fal.getLengths();
-//		int nLen = fal.getDegrees().length;
-//		Point[] pntMs = new Point[nLen];
-//		int[] nXs = new int[nLen];
-//		int[] nYs = new int[nLen];
-//
-//		//convert to cartesean points
-//		for (int nC = 0; nC < nLen; nC++) {
-//			pntMs[nC] = new Point((int) (10 * dLens[nC] * Math.sin(Math
-//					.toRadians(90) + fal.getDegrees()[nC])),
-//					(int) (10 * dLens[nC] * Math.cos(Math.toRadians(90)
-//							+ fal.getDegrees()[nC])));
-//		}
-//
-//		//set the color to white
-//		g.setColor(Color.white);
-//		//for each falcon left (not including the one that is playing)
-//		for (int nD = 1; nD < CommandCenter.getInstance().getNumFalcons(); nD++) {
-//			//create x and y values for the objects to the bottom right using cartesean points again
-//			for (int nC = 0; nC < fal.getDegrees().length; nC++) {
-//				nXs[nC] = pntMs[nC].x + Game.DIM.width - (20 * nD);
-//				nYs[nC] = pntMs[nC].y + Game.DIM.height - 40;
-//			}
-//			g.drawPolygon(nXs, nYs, nLen);
-//		}
+	private void drawNumberDiablosLeft(Graphics g) {
+        Diablo diablo = CommandCenter.getInstance().getDiablo();
+        int xCoord = Game.ARENA_WIDTH / 5;
+        int yCoord = (int) Game.DIM.getHeight() - Diablo.DIABLO_DIAMETER - 20;
+        for (int nD = 1; nD < CommandCenter.getInstance().getNumDiablos(); nD++) {
+            g.drawImage(diablo.getDiabloPic().getScaledInstance(Diablo.DIABLO_RADIUS, Diablo.DIABLO_RADIUS, 0), xCoord, yCoord, null);
+            xCoord = xCoord + Diablo.DIABLO_RADIUS + 5;
+        }
 	}
 	
 	private void initView() {
@@ -179,50 +159,56 @@ public class GamePanel extends Panel {
 	// This method draws some text to the middle of the screen before/after a game
 	private void displayTextOnScreen() {
 
-		strDisplay = "GAME OVER";
+		strDisplay = "DIABLO DODGEBALL";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4);
 
-		strDisplay = "use the arrow keys to turn and thrust";
+		strDisplay = "use the arrow keys to control Diablo";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 40);
 
-		strDisplay = "use the space bar to fire";
+		strDisplay = "use the left click to throw balls";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 80);
 
-		strDisplay = "'Enter' to Start";
-		grpOff.drawString(strDisplay,
-				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
-						+ nFontHeight + 120);
+        strDisplay = "and jump/dodge in direction of mouse";
+        grpOff.drawString(strDisplay,
+                (Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
+                        + nFontHeight + 120);
 
-		strDisplay = "'P' to Pause";
+		strDisplay = "use the right click to catch and pick up balls";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 160);
 
-		strDisplay = "'Q' to Quit";
+		strDisplay = "'Enter' to Start";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 200);
-		strDisplay = "left pinkie on 'A' for Shield";
+
+		strDisplay = "'P' to Pause";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 240);
 
-		strDisplay = "left index finger on 'F' for Guided Missile";
+		strDisplay = "'Q' to Quit";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 280);
-
-		strDisplay = "'Numeric-Enter' for Hyperspace";
+		strDisplay = "left pinkie on 'A' for Shield";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 320);
+
+		strDisplay = "left index finger on 'F' for Guided Missile";
+		grpOff.drawString(strDisplay,
+				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
+						+ nFontHeight + 360);
+
 	}
 	
 	public GameFrame getFrm() {return this.gmf;}
-	public void setFrm(GameFrame frm) {this.gmf = frm;}	
+	public void setFrm(GameFrame frm) {this.gmf = frm;}
 }

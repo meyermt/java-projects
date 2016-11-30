@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
 public class Diablo extends Sprite {
 
     private static final int WALKING_SPEED = 7;
-    private static final int DIABLO_DIAMETER = 60;
-    private static final int DIABLO_RADIUS = DIABLO_DIAMETER / 2;
+    public static final int DIABLO_DIAMETER = 60;
+    public static final int DIABLO_RADIUS = DIABLO_DIAMETER / 2;
 
     //positions in this array: 0 - walk right, 1 - walk right, 2 - walk left, 3 - walk left
     private SpriteSheet dWalking = new SpriteSheet("diablo-walking.png", 31, 28);
@@ -53,7 +53,7 @@ public class Diablo extends Sprite {
         isReleasingThrow = false;
         setThrowingSpeed(WALKING_SPEED);
         setTeam(Team.FRIEND);
-        setCenter(new Point(Game.DIM.width / 4, Game.DIM.height / 2));
+        setCenter(new Point(Game.ARENA_WIDTH / 4, Game.ARENA_HEIGHT / 2));
         setRadius(DIABLO_RADIUS);
         this.staticSheetPos = 0;
         BufferedImage[] dWalkingPhases = dWalking.getAllSprites();
@@ -72,6 +72,9 @@ public class Diablo extends Sprite {
         setDeltaY(0);
         if (isCatching) {
             //you can't move when catching
+        } else if (isReleasingThrow) {
+            //reset throwing speed
+            setThrowingSpeed(0);
         } else if (isThrowing) {
             updateThrowingSpeed();
         } else {
@@ -80,7 +83,7 @@ public class Diablo extends Sprite {
                 isFacingLeft = true;
                 setDeltaX(-WALKING_SPEED);
             }
-            if (walkingRight && (getCenter().getX() + DIABLO_RADIUS < Game.DIM.getWidth() / 2)) {
+            if (walkingRight && (getCenter().getX() + DIABLO_RADIUS < Game.ARENA_WIDTH / 2)) {
                 isFacingRight = true;
                 isFacingLeft = false;
                 setDeltaX(WALKING_SPEED);
@@ -88,7 +91,7 @@ public class Diablo extends Sprite {
             if (walkingUp && (getCenter().getY() - DIABLO_RADIUS > 0)) {
                 setDeltaY(-WALKING_SPEED);
             }
-            if (walkingDown && (getCenter().getY() + DIABLO_DIAMETER < Game.DIM.getHeight())) {
+            if (walkingDown && (getCenter().getY() + DIABLO_DIAMETER < Game.ARENA_HEIGHT)) {
                 setDeltaY(WALKING_SPEED);
             }
         }
@@ -143,9 +146,12 @@ public class Diablo extends Sprite {
         }
     }
 
+    public BufferedImage getDiabloPic() {
+        return diabloPhases[2];
+    }
+
     //longer it is held, more updates made
-    private void updateThrowingSpeed() {
-        setThrowingSpeed(getThrowingSpeed() + 1);
+    private void updateThrowingSpeed() { setThrowingSpeed(getThrowingSpeed() + 1);
     }
 
 }

@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.List;
 
 // ===============================================
 // == This Game class is the CONTROLLER
@@ -23,10 +24,13 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	// ===============================================
 
 	private final Set<Integer> pressedKeys = new HashSet<Integer>();
-	public static final Dimension DIM = new Dimension(1120, 660); //the dimension of the game.
+	public static final int ARENA_HEIGHT = 660;
+	public static final int ARENA_WIDTH = 1120;
+    public static final int BOTTOM_AND_SCORE = 100;
+	public static final Dimension DIM = new Dimension(ARENA_WIDTH, ARENA_HEIGHT + BOTTOM_AND_SCORE); //the dimension of the game.
 	private GamePanel gmpPanel;
 	public static Random R = new Random();
-	public static final double SAINT_X_TERRITORY = Game.DIM.getWidth() - (Game.DIM.getWidth() / 2);
+	public static final double SAINT_X_TERRITORY = ARENA_WIDTH - (ARENA_WIDTH / 2);
 	public final static int SAINTS_PER_COLUMN = 5;
 	public final static int ANI_DELAY = 45; // milliseconds between screen
 	// updates (animation)
@@ -110,7 +114,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 			//this might be a good place to check for collisions
 			directSaintsAndGetSaintBalls();
 			throwSaintBalls();
-			checkCollisions();
+			checkCollisionsAndJumps();
+            processDeadBalls();
+            processFrameTransactions();
 			//this might be a god place to check if the level is clear (no more foes)
 			//if the level is clear then spawn some big asteroids -- the number of asteroids 
 			//should increase with the level. 
@@ -127,8 +133,8 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 				// just skip this frame -- no big deal
 				continue;
 			}
-		} // end while
-	} // end run
+		}
+	}
 
 	/*
 		Here we will guide Saints to go get a ball
@@ -140,24 +146,32 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 			if (neutralX >= SAINT_X_TERRITORY) {
 				//find a saint that should get it and direct them
 				//making a saint off the map, because nearest will always be there, won't matter
-				Saint saint = new Saint();
+				Saint saint = null;
 				double nearest = Double.MAX_VALUE;
 				for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
 					if (movFoe instanceof Saint) {
 						double xDiff = movFoe.getCenter().getX() - movNeutral.getCenter().getX();
 						double yDiff = movFoe.getCenter().getY() - movNeutral.getCenter().getY();
-						if (Math.hypot(xDiff, yDiff) < nearest) {
+                        //if he's the closest and not already retrieving
+						if (Math.hypot(xDiff, yDiff) < nearest && !((Saint) movFoe).isRetrieving && !((Ball) movNeutral).hasFoeRetriever) {
 							saint = (Saint) movFoe;
-						}
+                        }
 					}
 				}
-				Ball ball = (Ball) movNeutral;
-				saint.retrieveBall(ball);
-				ball.hasFoeRetriever = true;
+				if (saint != null) {
+                    Ball ball = (Ball) movNeutral;
+                    ball.hasFoeRetriever = true;
+                    saint.isRetrieving = true;
+                    saint.retrieveBall(ball);
+                }
 			}
 		}
 	}
 
+	/*
+	    When a saint is ready to throw his (her?) ball, this invokes it. Depends on saint's throwing cadence and if
+	    they have a ball.
+	 */
 	private void throwSaintBalls() {
 		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
 			if (movFoe instanceof Saint) {
@@ -167,7 +181,6 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 					saint.hasBall = false;
 					saint.isThrowing = false;
 					saint.isReleasingThrow = true;
-					saint.getBall().hasFoeRetriever = false;
 					saint.setBall(null);
 					CommandCenter.getInstance().getOpsList().enqueue(new Ball(saint, (int) diablo.getCenter().getX(), (int) diablo.getCenter().getY()), CollisionOp.Operation.ADD);
 				}
@@ -175,67 +188,92 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		}
 	}
 
-	private void checkCollisions() {
-		Point pntFriendCenter, pntFoeCenter, pntNeutralCenter;
-		int nFriendRadiux, nFoeRadiux, nNeutralRadiux;
+	private void checkCollisionsAndJumps() {
+        Point pntFriendCenter, pntFoeCenter, pntNeutralCenter;
+        int nFriendRadiux, nFoeRadiux, nNeutralRadiux;
 
-		for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
-			processDeadBalls(movFriend);
-			for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-				processDeadBalls(movFoe);
+        /*
+            FRIEND w FOE COLLISIONS
+         */
+        for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
+            for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
 
-				pntFriendCenter = movFriend.getCenter();
-				pntFoeCenter = movFoe.getCenter();
-				nFriendRadiux = movFriend.getRadius();
-				nFoeRadiux = movFoe.getRadius();
+                pntFriendCenter = movFriend.getCenter();
+                pntFoeCenter = movFoe.getCenter();
+                nFriendRadiux = movFriend.getRadius();
+                nFoeRadiux = movFoe.getRadius();
 
-				//detect collision
-				if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux)) {
+                //already cleaned up dead balls, now see if anyone got hit
+                //TODO: add back in kill methods
+                //killFoe
+                //killDiablo
+            }
+        }
 
-					killFoe(movFoe);
-					//Sound.playSound("kapow.wav");
+        /*
+            NEUTRAL BALLS w FRIEND|FOE COLLISIONS
+            all non-held balls are moved back to neutrals. check if they are being picked up
+         */
+        for (Movable neutral : CommandCenter.getInstance().getMovNeutrals()) {
+            for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
+                pntFriendCenter = movFriend.getCenter();
+                pntNeutralCenter = neutral.getCenter();
+                nFriendRadiux = movFriend.getRadius();
+                nNeutralRadiux = neutral.getRadius();
+                if (pntFriendCenter.distance(pntNeutralCenter) < (nFriendRadiux + nNeutralRadiux)) {
+                    if (movFriend instanceof Diablo && neutral instanceof Ball) {
+                        Diablo diablo = (Diablo) movFriend;
+                        if (diablo.isCatching && !diablo.hasBall) {
+                            diablo.hasBall = true;
+                            CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
+                        }
+                    }
+                }
+            }
 
-				}//end if 
-			}//end inner for
-		}//end outer for
+            for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+                pntFoeCenter = movFoe.getCenter();
+                pntNeutralCenter = neutral.getCenter();
+                nFoeRadiux = movFoe.getRadius();
+                nNeutralRadiux = neutral.getRadius();
+                if (pntFoeCenter.distance(pntNeutralCenter) < (nFoeRadiux + nNeutralRadiux)) {
+                    if (movFoe instanceof Saint && neutral instanceof Ball) {
+                        Saint saint = (Saint) movFoe;
+                        if (!saint.hasBall) {
+                            saint.hasBall = true;
+                            saint.isRetrieving = false;
+                            saint.setBall((Ball) neutral);
+                            CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-		//all non-held balls are moved back to neutrals. check if they are being picked up
-		for (Movable neutral : CommandCenter.getInstance().getMovNeutrals()) {
-			for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
-				pntFriendCenter = movFriend.getCenter();
-				pntNeutralCenter = neutral.getCenter();
-				nFriendRadiux = movFriend.getRadius();
-				nNeutralRadiux = neutral.getRadius();
-				if (pntFriendCenter.distance(pntNeutralCenter) < (nFriendRadiux + nNeutralRadiux)) {
-					if (movFriend instanceof Diablo && neutral instanceof Ball) {
-						Diablo diablo = (Diablo) movFriend;
-						if (diablo.isCatching && !diablo.hasBall) {
-							diablo.hasBall = true;
-							CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
-						}
-					}
-				}
-			}
+    /*
+        STOPPED BALLS
+    */
+    private void processDeadBalls() {
+        for (Movable mov : CommandCenter.getInstance().getMovFoes()) {
+            reNeutralizeDeadBall(mov);
+        }
+        for (Movable mov : CommandCenter.getInstance().getMovFriends()) {
+            reNeutralizeDeadBall(mov);
+        }
+    }
 
-			for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-				pntFoeCenter = movFoe.getCenter();
-				pntNeutralCenter = neutral.getCenter();
-				nFoeRadiux = movFoe.getRadius();
-				nNeutralRadiux = neutral.getRadius();
-				if (pntFoeCenter.distance(pntNeutralCenter) < (nFoeRadiux + nNeutralRadiux)) {
-					if (movFoe instanceof Saint && neutral instanceof Ball) {
-						Saint saint = (Saint) movFoe;
-						if (!saint.hasBall) {
-							saint.hasBall = true;
-							saint.isRetrieving = false;
-							saint.setBall((Ball) neutral);
-							CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
-						}
-					}
-				}
-			}
-		}
+    private void reNeutralizeDeadBall(Movable mov) {
+        if (mov instanceof Ball) {
+            Ball ball = (Ball) mov;
+            if (!ball.isMoving) {
+                CommandCenter.getInstance().getOpsList().enqueue(mov, CollisionOp.Operation.REMOVE);
+                CommandCenter.getInstance().getOpsList().enqueue(new Ball(mov.getCenter()), CollisionOp.Operation.ADD);
+            }
+        }
+    }
 
+    private void processFrameTransactions() {
 		//we are dequeuing the opsList and performing operations in serial to avoid mutating the movable arraylists while iterating them above
 		while(!CommandCenter.getInstance().getOpsList().isEmpty()){
 			CollisionOp cop =  CommandCenter.getInstance().getOpsList().dequeue();
@@ -289,25 +327,17 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		}
 		//a request to the JVM is made every frame to garbage collect, however, the JVM will choose when and how to do this
 		System.gc();
-
-	}//end meth
-
-	private void processDeadBalls(Movable mov) {
-		if (mov instanceof Ball) {
-			Ball ball = (Ball) mov;
-			if (!ball.isMoving) {
-				CommandCenter.getInstance().getOpsList().enqueue(mov, CollisionOp.Operation.REMOVE);
-				CommandCenter.getInstance().getOpsList().enqueue(new Ball(mov.getCenter()), CollisionOp.Operation.ADD);
-			}
-		}
 	}
 
 	private void killFoe(Movable movFoe) {
-
 		//remove the original Foe
 		CommandCenter.getInstance().getOpsList().enqueue(movFoe, CollisionOp.Operation.REMOVE);
-
 	}
+
+	private void killDiablo(Movable movFriend) {
+        CommandCenter.getInstance().getOpsList().enqueue(movFriend, CollisionOp.Operation.REMOVE);
+        CommandCenter.getInstance().spawnDiablo(false);
+    }
 
 	//some methods for timing events in the game,
 	//such as the appearance of UFOs, floaters (power-ups), etc. 
@@ -326,9 +356,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		int columns = (numSaints + SAINTS_PER_COLUMN - 1) / SAINTS_PER_COLUMN;
 		for (int i = 1; i <= numSaints; i++) {
 			int column = (i + SAINTS_PER_COLUMN - 1) / SAINTS_PER_COLUMN;
-			double columnSpacing = (Game.DIM.getWidth() / 2) / (columns + 1);
-			double x = Game.DIM.getWidth() - (Game.DIM.getWidth() / 2) + (columnSpacing * column);
-			double rowSpacing = (Game.DIM.getHeight() / (SAINTS_PER_COLUMN + 1));
+			double columnSpacing = (ARENA_WIDTH / 2) / (columns + 1);
+			double x = SAINT_X_TERRITORY + (columnSpacing * column);
+			double rowSpacing = (ARENA_HEIGHT / (SAINTS_PER_COLUMN + 1));
 			int yPos = (i % SAINTS_PER_COLUMN) == 0 ? 5 : (i % SAINTS_PER_COLUMN);
 			double y = yPos * rowSpacing;
 			Point startingPoint = new Point((int) x, (int) y);
@@ -471,7 +501,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 				diablo.isThrowing = false;
 				diablo.isReleasingThrow = true;
 				CommandCenter.getInstance().getOpsList().enqueue(new Ball(diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
-			}
+			} else {
+                diablo.isJumping = true;
+            }
 		} else if (SwingUtilities.isRightMouseButton(e)) {
 			diablo.isCatching = false;
 		}

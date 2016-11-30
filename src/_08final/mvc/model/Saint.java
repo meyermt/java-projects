@@ -12,10 +12,14 @@ import java.util.Random;
 public class Saint extends Sprite {
 
     private static final int WALKING_SPEED = 7;
-    private static final int BUMPER_WAIT_FRAMES = 10;
+    private static final int AM_I_LOST_TIMER = 400;
     private static final int SAINT_DIAMETER = 60;
     private static final int SAINT_RADIUS = SAINT_DIAMETER / 2;
-    private static final int TOP_SPEED = 60;
+    private static final int MAX_THROWING_CADENCE = 30;
+    private static final int MIN_THROWING_CADENCE = 1;
+    private static final int MIN_THROWING_SPEED = 10;
+    public int topSpeed = 30;
+    private int lostCounter = 0;
     private BufferedImage[] saintPhases = new SpriteSheet("saint-phases.png", 32, 32).getAllSprites();
 
     public boolean isThrowing;
@@ -38,24 +42,20 @@ public class Saint extends Sprite {
     private double radians;
     private boolean isWalkingRight;
     private boolean isWalkingUp;
-    private int xBumperCounter;
-    private int yBumperCounter;
 
     public Saint() {
     }
 
     //TODO: should add an intelligence in this constructor at some point
     public Saint(Point startingPoint) {
-        xBumperCounter = 0;
-        yBumperCounter = 0;
         isFacingLeft = true;
         isFacingRight = false;
         setTeam(Team.FOE);
         setRadius(SAINT_RADIUS);
         setCenter(startingPoint);
-        setThrowingSpeed(random.nextDouble() * TOP_SPEED);
-        radians = random.nextDouble() * 2;
-        throwingCadence = random.nextInt(10) + 1;
+        setThrowingSpeed(random.nextInt(topSpeed) + MIN_THROWING_SPEED);
+        radians = (random.nextDouble() * Math.PI);
+        throwingCadence = random.nextInt(MAX_THROWING_CADENCE) + MIN_THROWING_CADENCE;
         setDeltaX(Math.cos(radians) * WALKING_SPEED);
         setDeltaY(Math.sin(radians) * WALKING_SPEED);
         setWalkingByRadians();
@@ -65,65 +65,65 @@ public class Saint extends Sprite {
 
     @Override
     public void move() {
-            Point pnt = getCenter();
-            //non max values implies there is a ball to get
-            if (isRetrieving && !hasBall) {
-                radians = Math.atan2((ballYCoords - getCenter().getY()), (ballXCoords - getCenter().getX()));
-                setDeltaX(Math.cos(radians) * WALKING_SPEED);
-                setDeltaY(Math.sin(radians) * WALKING_SPEED);
-                setWalkingByRadians();
-            }
+        lostCounter++;
+        Point pnt = getCenter();
+
+        setDeltaX(Math.cos(radians) * WALKING_SPEED);
+        setDeltaY(Math.sin(radians) * WALKING_SPEED);
 
             if (!isRetrieving) {
-                //need to wait for a bit after bouncing so we don't spiral off the screen by changing too soon
-                int bumpXWait = xBumperCounter % BUMPER_WAIT_FRAMES;
-                int bumpYWait = yBumperCounter % BUMPER_WAIT_FRAMES;
-                //this just keeps the sprite inside the bounds of their side
-                if (pnt.x + SAINT_RADIUS > Game.DIM.getWidth() && bumpXWait == 0) {
-                    radians = Math.PI - radians;
-                    xBumperCounter++;
-                }
-                if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY && bumpXWait == 0) {
-                    radians = Math.PI - radians;
-                    xBumperCounter++;
-                    //isWalkingRight = true;
-                }
-                if (pnt.y + SAINT_RADIUS > Game.DIM.getHeight() && bumpYWait == 0) {
-                    radians = (2 * Math.PI) - radians;
-                    yBumperCounter++;
-                    //isWalkingUp = true;
-                }
-                if (pnt.y - SAINT_RADIUS < 0 && bumpYWait == 0) {
-                    radians = (2 * Math.PI) - radians;
-                    yBumperCounter++;
-                    //isWalkingUp = false;
-                } else {
-                    xBumperCounter = 0;
-                    yBumperCounter = 0;
-                }
-                setDeltaX(Math.cos(radians) * WALKING_SPEED);
-                setDeltaY(Math.sin(radians) * WALKING_SPEED);
+                bounceOffEdges(pnt);
             } else {
-                setDeltaX(Math.cos(radians) * WALKING_SPEED);
-                setDeltaY(Math.sin(radians) * WALKING_SPEED);
-                if (pnt.x + SAINT_RADIUS > Game.DIM.getWidth()) {
+                if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH) {
                     setDeltaX(0);
                 }
                 if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY) {
                     setDeltaX(0);
                 }
-                if (pnt.y + SAINT_RADIUS > Game.DIM.getHeight()) {
+                if (pnt.y + SAINT_DIAMETER > Game.ARENA_HEIGHT) {
                     setDeltaY(0);
                 }
                 if (pnt.y - SAINT_RADIUS < 0) {
                     setDeltaY(0);
                 }
+                if (lostCounter % AM_I_LOST_TIMER == 0) {
+                    if (ball != null) {
+                        System.out.println("sending you to retrieve ball");
+                        retrieveBall(ball);
+                    } else {
+                        //only safe thing to do here is stop retrieving
+                        isRetrieving = false;
+                    }
+                }
             }
-            setWalkingByRadians();
-            double dX = pnt.x + getDeltaX();
-            double dY = pnt.y + getDeltaY();
-            setCenter(new Point((int) dX, (int) dY));
+                double dX = pnt.x + getDeltaX();
+                double dY = pnt.y + getDeltaY();
+                setCenter(new Point((int) dX, (int) dY));
             //setGraphicDirections(radians);
+    }
+
+    public void bounceOffEdges(Point pnt) {
+        if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH && isWalkingRight) {
+            radians = Math.PI - radians;
+            isWalkingRight = false;
+            isFacingLeft = true;
+            isFacingRight = false;
+        } else if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY && !isWalkingRight) {
+            radians = Math.PI - radians;
+            isWalkingRight = true;
+            isFacingLeft = false;
+            isFacingRight = true;
+        } else if (pnt.y + SAINT_DIAMETER> Game.ARENA_HEIGHT && !isWalkingUp) {
+            radians = (2 * Math.PI) - radians;
+            isWalkingUp = true;
+        }
+        if (pnt.y - SAINT_RADIUS < 0 && isWalkingUp) {
+            radians = (2 * Math.PI) - radians;
+            isWalkingUp = false;
+        } else {
+        }
+        setDeltaX(Math.cos(radians) * WALKING_SPEED);
+        setDeltaY(Math.sin(radians) * WALKING_SPEED);
     }
 
     @Override
@@ -131,42 +131,43 @@ public class Saint extends Sprite {
         Point coord = getCenter();
         if (isFacingLeft && !isCatching && !hasBall) {
             if (leftStepSwitch) {
-                g.drawImage(saintPhases[0].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[2].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 leftStepSwitch = false;
             } else {
-                g.drawImage(saintPhases[1].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[3].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 leftStepSwitch = true;
             }
         } else if (isFacingRight && !isCatching && !hasBall) {
             if (rightStepSwitch) {
-                g.drawImage(saintPhases[2].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[0].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 rightStepSwitch = false;
             } else {
-                g.drawImage(saintPhases[3].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[1].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 rightStepSwitch = true;
             }
         } else if (isReleasingThrow) {
-            g.drawImage(saintPhases[8].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+            g.drawImage(saintPhases[6].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
             isReleasingThrow = false;
         } else if (hasBall) {
             if (rightStepThrowingSwitch) {
-                g.drawImage(saintPhases[6].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[4].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 rightStepThrowingSwitch = false;
             } else {
-                g.drawImage(saintPhases[7].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+                g.drawImage(saintPhases[5].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
                 rightStepThrowingSwitch = true;
             }
         } else if (isCatching && !hasBall) {
-            g.drawImage(saintPhases[4].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
+            g.drawImage(saintPhases[7].getScaledInstance(SAINT_DIAMETER, SAINT_DIAMETER, 0), (int) coord.getX() - SAINT_RADIUS, (int) coord.getY() - SAINT_RADIUS, null);
         }
     }
 
     public void retrieveBall(Ball ball) {
-        if (!ball.hasFoeRetriever) {
-            ballXCoords = ball.getCenter().getX();
-            ballYCoords = ball.getCenter().getY();
-            isRetrieving = true;
-        }
+        ballXCoords = ball.getCenter().getX();
+        ballYCoords = ball.getCenter().getY();
+        System.out.println("retrieving at y: " + ballYCoords);
+        System.out.println("retrieving at x: " + ballXCoords);
+        radians = Math.atan2((ballYCoords - getCenter().getY()), (ballXCoords - getCenter().getX()));
+        setWalkingByRadians();
     }
 
     public Ball getBall() {
@@ -182,10 +183,6 @@ public class Saint extends Sprite {
     }
 
     private void setWalkingByRadians() {
-//        System.out.println("radians is: " + radians);
-//        System.out.println(" pre adjust walking right? " + isWalkingRight);
-//        System.out.println(" pre adjust walking up? " + isWalkingUp);
-        System.out.println(" is retrieving? " + isRetrieving);
         if (Math.PI / 2 > Math.abs(radians)) {
             isWalkingRight = true;
             isFacingRight = true;

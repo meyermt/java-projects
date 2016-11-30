@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CommandCenter {
 
-	private  int nNumFalcon;
+	private  int nNumDiablo;
 	private  int nLevel;
 	private  long lScore;
 	private Diablo diablo;
@@ -40,24 +40,21 @@ public class CommandCenter {
 	public  void initGame(){
 		setLevel(1);
 		setScore(0);
-		setNumFalcons(3);
-		//spawnFalcon(true);
+		setNumDiablos(3);
 		spawnDiablo(true);
 		spawnBalls(3);
 	}
 	
 	// The parameter is true if this is for the beginning of the game, otherwise false
-	// When you spawn a new falcon, you need to decrement its number
+	// When you spawn a new diablo, you need to decrement its number
 	public void spawnDiablo(boolean bFirst) {
-//		if (getNumFalcons() != 0) {
-//			falShip = new Falcon();
-//
-//			opsList.enqueue(falShip, CollisionOp.Operation.ADD);
-//			if (!bFirst)
-//			    setNumFalcons(getNumFalcons() - 1);
-//		}
-		diablo = new Diablo();
-		opsList.enqueue(diablo, CollisionOp.Operation.ADD);
+		if (getNumDiablos() != 0) {
+			diablo = new Diablo();
+
+			opsList.enqueue(diablo, CollisionOp.Operation.ADD);
+			if (!bFirst)
+			    setNumDiablos(getNumDiablos() - 1);
+		}
 		
 		//Sound.playSound("shipspawn.wav");
 
@@ -103,7 +100,7 @@ public class CommandCenter {
 	}
 	
 	public  boolean isGameOver() {		//if the number of falcons is zero, then game over
-		if (getNumFalcons() == 0) {
+		if (getNumDiablos() == 0) {
 			return true;
 		}
 		return false;
@@ -125,12 +122,12 @@ public class CommandCenter {
 		nLevel = n;
 	}
 
-	public  int getNumFalcons() {
-		return nNumFalcon;
+	public  int getNumDiablos() {
+		return nNumDiablo;
 	}
 
-	public  void setNumFalcons(int nParam) {
-		nNumFalcon = nParam;
+	public  void setNumDiablos(int nParam) {
+		nNumDiablo = nParam;
 	}
 
 	public Diablo getDiablo() { return diablo; }
