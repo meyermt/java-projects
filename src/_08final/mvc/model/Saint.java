@@ -18,6 +18,7 @@ public class Saint extends Sprite {
     private static final int MAX_THROWING_CADENCE = 30;
     private static final int MIN_THROWING_CADENCE = 1;
     private static final int MIN_THROWING_SPEED = 10;
+
     public int topSpeed = 30;
     private int lostCounter = 0;
     private BufferedImage[] saintPhases = new SpriteSheet("saint-phases.png", 32, 32).getAllSprites();
@@ -99,7 +100,6 @@ public class Saint extends Sprite {
                 double dX = pnt.x + getDeltaX();
                 double dY = pnt.y + getDeltaY();
                 setCenter(new Point((int) dX, (int) dY));
-            //setGraphicDirections(radians);
     }
 
     public void bounceOffEdges(Point pnt) {
@@ -210,5 +210,4 @@ public class Saint extends Sprite {
             isFacingRight = false;
         }
     }
-
 }

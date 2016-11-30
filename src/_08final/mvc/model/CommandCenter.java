@@ -6,12 +6,15 @@ import java.util.List;
 
 public class CommandCenter {
 
-	private  int nNumDiablo;
-	private  int nLevel;
-	private  long lScore;
+	private int nNumDiablo;
+	private int nLevel;
+	private long lScore;
 	private Diablo diablo;
-	private  boolean bPlaying;
-	private  boolean bPaused;
+	private Ball killingBall;
+	private boolean bPlaying;
+	private boolean bPaused;
+	private boolean isNewLevel;
+	private int spawnedBalls;
 	
 	// These ArrayLists with capacities set
 	private List<Movable> movDebris = new ArrayList<>(300);
@@ -38,11 +41,13 @@ public class CommandCenter {
 
 
 	public  void initGame(){
+		setSpawnedBallCount(0);
 		setLevel(1);
 		setScore(0);
 		setNumDiablos(3);
 		spawnDiablo(true);
 		spawnBalls(3);
+		setNewLevel(false);
 	}
 	
 	// The parameter is true if this is for the beginning of the game, otherwise false
@@ -65,6 +70,15 @@ public class CommandCenter {
 			Ball ball = new Ball(i, numBalls);
 			opsList.enqueue(ball, CollisionOp.Operation.ADD);
 		}
+		this.spawnedBalls = spawnedBalls + numBalls;
+	}
+
+	public int getSpawnedBallCount() {
+		return spawnedBalls;
+	}
+
+	public void setSpawnedBallCount(int numBalls) {
+		this.spawnedBalls = numBalls;
 	}
 
 	public GameOpsList getOpsList() {
@@ -97,6 +111,14 @@ public class CommandCenter {
 
 	public  void setPaused(boolean bPaused) {
 		this.bPaused = bPaused;
+	}
+
+	public  boolean isNewLevel() {
+		return isNewLevel;
+	}
+
+	public  void setNewLevel(boolean isNewLevel) {
+		this.isNewLevel = isNewLevel;
 	}
 	
 	public  boolean isGameOver() {		//if the number of falcons is zero, then game over
@@ -136,19 +158,25 @@ public class CommandCenter {
 		this.diablo = diablo;
 	}
 
-	public  List<Movable> getMovDebris() {
+	public Ball getKillingBall() { return killingBall; }
+
+	public void setKillingBall(Ball killingBall){
+		this.killingBall = killingBall;
+	}
+
+	public List<Movable> getMovDebris() {
 		return movDebris;
 	}
 
-	public  List<Movable> getMovFriends() {
+	public List<Movable> getMovFriends() {
 		return movFriends;
 	}
 
-	public  List<Movable> getMovFoes() {
+	public List<Movable> getMovFoes() {
 		return movFoes;
 	}
 
-	public  List<Movable> getMovFloaters() {
+	public List<Movable> getMovFloaters() {
 		return movFloaters;
 	}
 

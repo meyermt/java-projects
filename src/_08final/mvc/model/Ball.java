@@ -14,7 +14,8 @@ public class Ball extends Sprite {
     private SpriteSheet ballSheet = new SpriteSheet("ball.png", 9, 8);
     private final static int BALL_DIAMETER = 18;
     private final static int BALL_RADIUS = BALL_DIAMETER / 2;
-    private final static double AIR_FRICTION = .2;
+    private final static double AIR_FRICTION = .3;
+    private final int uid;
     private double radians;
     private double ballSpeed;
     public boolean isMoving;
@@ -31,6 +32,7 @@ public class Ball extends Sprite {
      * @param numBalls
      */
     public Ball(int ballPos, int numBalls) {
+        uid = ballPos;
         setTeam(Team.NEUTRAL);
         int ballYPos = (Game.ARENA_HEIGHT / (numBalls + 1)) * ballPos;
         setCenter(new Point((Game.ARENA_WIDTH / 2), ballYPos));
@@ -39,7 +41,8 @@ public class Ball extends Sprite {
         hasFoeRetriever = false;
     }
 
-    public Ball(Point center) {
+    public Ball(int uid, Point center) {
+        this.uid = uid;
         setTeam(Team.NEUTRAL);
         setCenter(center);
         setRadius(BALL_RADIUS);
@@ -51,7 +54,8 @@ public class Ball extends Sprite {
      * The other construction, which assumes this ball is being thrown by a sprite of some sort
      * @param sprite
      */
-    public Ball(Sprite sprite, int mouseX, int mouseY) {
+    public Ball(int uid, Sprite sprite, int mouseX, int mouseY) {
+        this.uid = uid;
         setThrower(sprite);
         setTeam(sprite.getTeam());
         setRadius(BALL_RADIUS);
@@ -132,5 +136,9 @@ public class Ball extends Sprite {
             flyingUp = false;
         }
         isMoving = true;
+    }
+
+    public int getUID() {
+        return uid;
     }
 }

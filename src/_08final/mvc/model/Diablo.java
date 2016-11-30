@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 public class Diablo extends Sprite {
 
     private static final int WALKING_SPEED = 7;
+    public static final int MAX_THROWING_SPEED = 40;
     public static final int DIABLO_DIAMETER = 60;
     public static final int DIABLO_RADIUS = DIABLO_DIAMETER / 2;
 
@@ -29,6 +30,7 @@ public class Diablo extends Sprite {
     private int catchRange; //basically, how exact do you have to be with when the ball gets to him to catch it
     private int catchAccuracy; //probability he catches stuff
 
+    private boolean bProtected; //for fade in and out
     public boolean isThrowing;
     public boolean isReleasingThrow;
     private boolean isJumping;
@@ -40,7 +42,6 @@ public class Diablo extends Sprite {
     public boolean walkingRight;
     public boolean walkingUp;
     public boolean walkingDown;
-    public boolean isAboutToDie;
 
     private boolean leftStepSwitch;
     private boolean rightStepSwitch;
@@ -48,7 +49,6 @@ public class Diablo extends Sprite {
     private int staticSheetPos;
 
     public Diablo() {
-        isAboutToDie = false;
         hasBall = false;
         isThrowing = false;
         isFacingRight = true;
@@ -66,6 +66,7 @@ public class Diablo extends Sprite {
         System.arraycopy(dCatchingPhases, 0, diabloPhases, dWalkingPhases.length, dCatchingPhases.length);
         System.arraycopy(dThrowingPhases, 0, diabloPhases, dWalkingPhases.length + dCatchingPhases.length, dThrowingPhases.length);
         isCatching = false;
+        setProtected(true);
     }
 
     @Override
@@ -102,6 +103,14 @@ public class Diablo extends Sprite {
         double dX = pnt.x + getDeltaX();
         double dY = pnt.y + getDeltaY();
         setCenter(new Point((int) dX, (int) dY));
+
+        //implementing the fadeInOut functionality - added by Dmitriy
+        if (getProtected()) {
+            setFadeValue(getFadeValue() + 1);
+        }
+        if (getFadeValue() == 50) {
+            setProtected(false);
+        }
     }
 
     @Override
@@ -152,8 +161,20 @@ public class Diablo extends Sprite {
         return diabloPhases[2];
     }
 
+    public void setProtected(boolean bParam) {
+        if (bParam) {
+            setFadeValue(0);
+        }
+        bProtected = bParam;
+    }
+
+    public boolean getProtected() {return bProtected;}
+
     //longer it is held, more updates made
-    private void updateThrowingSpeed() { setThrowingSpeed(getThrowingSpeed() + 1);
+    private void updateThrowingSpeed() {
+        if (getThrowingSpeed() < MAX_THROWING_SPEED) {
+            setThrowingSpeed(getThrowingSpeed() + 1);
+        }
     }
 
 }

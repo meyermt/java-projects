@@ -85,7 +85,14 @@ public class GamePanel extends Panel {
 			strDisplay = "Game Paused";
 			grpOff.drawString(strDisplay,
 					(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4);
-		}
+		} else if (CommandCenter.getInstance().isNewLevel()) {
+            String strDisplay1 = "Diablo, You Are Rising";
+            grpOff.drawString(strDisplay1,
+                    (Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4);
+            String strDisplay2 = "Press Enter to compete at Level " + CommandCenter.getInstance().getLevel();
+            grpOff.drawString(strDisplay2,
+                    (Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 2);
+        }
 		
 		//playing and not paused!
 		else {

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 // ===============================================
 // == This Game class is the CONTROLLER
@@ -43,7 +44,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
 	private final int PAUSE = 80, // p key
 			START = KeyEvent.VK_ENTER, // s key
-			SPECIAL = 70; 					// fire special weapon;  F key
+            QUIT = 81; // q key					// fire special weapon;  F key
 
 	private Clip clpThrust;
 	private Clip clpMusicBackground;
@@ -182,7 +183,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 					saint.isThrowing = false;
 					saint.isReleasingThrow = true;
 					saint.setBall(null);
-					CommandCenter.getInstance().getOpsList().enqueue(new Ball(saint, (int) diablo.getCenter().getX(), (int) diablo.getCenter().getY()), CollisionOp.Operation.ADD);
+                    int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                    CommandCenter.getInstance().setSpawnedBallCount(uid);
+					CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint, (int) diablo.getCenter().getX(), (int) diablo.getCenter().getY()), CollisionOp.Operation.ADD);
 				}
 			}
 		}
@@ -204,25 +207,29 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 nFoeRadiux = movFoe.getRadius();
                 nFriendCatchRadiux = movFriend.getRadius() / 2;
 
-                if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux)) {
+                if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux) && !CommandCenter.getInstance().getDiablo().getProtected()) {
                     if (movFriend instanceof  Diablo) {
                         Diablo diablo = (Diablo) movFriend;
+                        Ball ball = (Ball) movFoe;
+
                         if (pntFriendCenter.distance(pntFoeCenter) < (nFriendCatchRadiux + nFoeRadiux) && ((Diablo) movFriend).isCatching) {
-                            Ball ball = (Ball) movFoe;
                             CommandCenter.getInstance().getOpsList().enqueue(ball.getThrower(), CollisionOp.Operation.REMOVE);
                             CommandCenter.getInstance().getOpsList().enqueue(ball, CollisionOp.Operation.REMOVE);
+                            CommandCenter.getInstance().setKillingBall(null);
                             diablo.hasBall = true;
                         } else {
-                            diablo.isAboutToDie = true;
+                            CommandCenter.getInstance().setKillingBall(ball);
                         }
                     } else if (movFoe instanceof Saint) {
+                        Ball ball = (Ball) movFriend;
+                        ball.randomFlight();
                         killFoe(movFoe);
                     }
                 //this means we've gotten beyond the inner radius without a catch and the person is dead
-                } else if (movFriend instanceof Diablo) {
-                    Diablo diablo = (Diablo) movFriend;
-                    if (diablo.isAboutToDie) {
-                        killDiablo(diablo);
+                } else if (movFriend instanceof Diablo && movFoe instanceof Ball && CommandCenter.getInstance().getKillingBall() != null) {
+                    if (CommandCenter.getInstance().getKillingBall().getUID() == ((Ball) movFoe).getUID()) {
+                        killDiablo(movFriend);
+                        CommandCenter.getInstance().setKillingBall(null);
                     }
                 }
             }
@@ -286,7 +293,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
             Ball ball = (Ball) mov;
             if (!ball.isMoving) {
                 CommandCenter.getInstance().getOpsList().enqueue(mov, CollisionOp.Operation.REMOVE);
-                CommandCenter.getInstance().getOpsList().enqueue(new Ball(mov.getCenter()), CollisionOp.Operation.ADD);
+                int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                CommandCenter.getInstance().setSpawnedBallCount(uid);
+                CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, mov.getCenter()), CollisionOp.Operation.ADD);
             }
         }
     }
@@ -392,36 +401,36 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		CommandCenter.getInstance().setLevel(0);
 		CommandCenter.getInstance().setPlaying(true);
 		CommandCenter.getInstance().setPaused(false);
-		spawnSaints(1);
 		//if (!bMuted)
 		// clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
 	private boolean isLevelClear(){
-		//if there are no more Asteroids on the screen
-//		boolean bAsteroidFree = true;
-//		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-//			if (movFoe instanceof Asteroid){
-//				bAsteroidFree = false;
-//				break;
-//			}
-//		}
-//
-//		return bAsteroidFree;
-		//my code to stay on level
-		return false;
+		//if there are no more Saints on the screen
+		boolean areSaintsGone = true;
+		for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
+			if (movFoe instanceof Saint){
+				areSaintsGone = false;
+				break;
+			}
+		}
+
+		return areSaintsGone;
 	}
 
 	private void checkNewLevel(){
 
-//		if (isLevelClear() ){
-//			if (CommandCenter.getInstance().getFalcon() !=null)
-//				CommandCenter.getInstance().getFalcon().setProtected(true);
-//
-//			spawnAsteroids(CommandCenter.getInstance().getLevel() + 2);
-//			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
-//
-//		}
+		if (isLevelClear() ){
+            if (CommandCenter.getInstance().getDiablo() !=null) {
+                CommandCenter.getInstance().getDiablo().setProtected(true);
+            }
+            if (CommandCenter.getInstance().getLevel() != 0) {
+                CommandCenter.getInstance().setNewLevel(true);
+            }
+            CommandCenter.getInstance().spawnBalls(CommandCenter.getInstance().getLevel());
+            spawnSaints(CommandCenter.getInstance().getLevel() + 1);
+			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
+		}
 	}
 
 
@@ -440,12 +449,24 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		Diablo diablo = CommandCenter.getInstance().getDiablo();
-		int nKey = e.getKeyCode();
-		pressedKeys.add(nKey);
+        Diablo diablo = CommandCenter.getInstance().getDiablo();
+        int nKey = e.getKeyCode();
+        pressedKeys.add(nKey);
 
-		if (nKey == START && !CommandCenter.getInstance().isPlaying())
-			startGame();
+        if (nKey == START && !CommandCenter.getInstance().isPlaying()) {
+            startGame();
+        } else if (nKey == START && CommandCenter.getInstance().isNewLevel()) {
+            CommandCenter.getInstance().setNewLevel(false);
+        } else if (nKey == PAUSE){
+            CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
+            //if (CommandCenter.getInstance().isPaused())
+                //  stopLoopingSounds(clpMusicBackground, clpThrust);
+            //else
+                //TODO: add your music here
+                //clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
+        } else if (nKey == QUIT) {
+            System.exit(0);
+        }
 
 		if (diablo != null) {
 			for (Integer pressedKey : pressedKeys) {
@@ -518,7 +539,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 				diablo.hasBall = false;
 				diablo.isThrowing = false;
 				diablo.isReleasingThrow = true;
-				CommandCenter.getInstance().getOpsList().enqueue(new Ball(diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
+                int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                CommandCenter.getInstance().setSpawnedBallCount(uid);
+				CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
 			} else {
                 //diablo.isJumping = true;
             }
