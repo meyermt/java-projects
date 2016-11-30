@@ -190,7 +190,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
 	private void checkCollisionsAndJumps() {
         Point pntFriendCenter, pntFoeCenter, pntNeutralCenter;
-        int nFriendRadiux, nFoeRadiux, nNeutralRadiux;
+        int nFriendRadiux, nFoeRadiux, nNeutralRadiux, nFriendCatchRadiux;
 
         /*
             FRIEND w FOE COLLISIONS
@@ -202,11 +202,29 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 pntFoeCenter = movFoe.getCenter();
                 nFriendRadiux = movFriend.getRadius();
                 nFoeRadiux = movFoe.getRadius();
+                nFriendCatchRadiux = movFriend.getRadius() / 2;
 
-                //already cleaned up dead balls, now see if anyone got hit
-                //TODO: add back in kill methods
-                //killFoe
-                //killDiablo
+                if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux)) {
+                    if (movFriend instanceof  Diablo) {
+                        Diablo diablo = (Diablo) movFriend;
+                        if (pntFriendCenter.distance(pntFoeCenter) < (nFriendCatchRadiux + nFoeRadiux) && ((Diablo) movFriend).isCatching) {
+                            Ball ball = (Ball) movFoe;
+                            CommandCenter.getInstance().getOpsList().enqueue(ball.getThrower(), CollisionOp.Operation.REMOVE);
+                            CommandCenter.getInstance().getOpsList().enqueue(ball, CollisionOp.Operation.REMOVE);
+                            diablo.hasBall = true;
+                        } else {
+                            diablo.isAboutToDie = true;
+                        }
+                    } else if (movFoe instanceof Saint) {
+                        killFoe(movFoe);
+                    }
+                //this means we've gotten beyond the inner radius without a catch and the person is dead
+                } else if (movFriend instanceof Diablo) {
+                    Diablo diablo = (Diablo) movFriend;
+                    if (diablo.isAboutToDie) {
+                        killDiablo(diablo);
+                    }
+                }
             }
         }
 
@@ -502,7 +520,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 				diablo.isReleasingThrow = true;
 				CommandCenter.getInstance().getOpsList().enqueue(new Ball(diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
 			} else {
-                diablo.isJumping = true;
+                //diablo.isJumping = true;
             }
 		} else if (SwingUtilities.isRightMouseButton(e)) {
 			diablo.isCatching = false;

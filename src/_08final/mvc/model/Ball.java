@@ -21,6 +21,7 @@ public class Ball extends Sprite {
     public boolean flyingRight;
     public boolean flyingUp;
     public boolean hasFoeRetriever;
+    private Sprite thrower;
     private Random random = new Random();
 
     /**
@@ -51,6 +52,7 @@ public class Ball extends Sprite {
      * @param sprite
      */
     public Ball(Sprite sprite, int mouseX, int mouseY) {
+        setThrower(sprite);
         setTeam(sprite.getTeam());
         setRadius(BALL_RADIUS);
         setCenter(new Point((int) sprite.getCenter().getX(), (int) sprite.getCenter().getY()));
@@ -60,6 +62,14 @@ public class Ball extends Sprite {
         setDeltaY( Math.sin(radians) * ballSpeed );
         setDirection();
         hasFoeRetriever = false;
+    }
+
+    public void setThrower(Sprite thrower) {
+        this.thrower = thrower;
+    }
+
+    public Sprite getThrower() {
+        return thrower;
     }
 
     @Override

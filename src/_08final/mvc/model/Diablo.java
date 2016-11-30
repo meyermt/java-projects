@@ -40,6 +40,7 @@ public class Diablo extends Sprite {
     public boolean walkingRight;
     public boolean walkingUp;
     public boolean walkingDown;
+    public boolean isAboutToDie;
 
     private boolean leftStepSwitch;
     private boolean rightStepSwitch;
@@ -47,6 +48,7 @@ public class Diablo extends Sprite {
     private int staticSheetPos;
 
     public Diablo() {
+        isAboutToDie = false;
         hasBall = false;
         isThrowing = false;
         isFacingRight = true;
