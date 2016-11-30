@@ -12,7 +12,7 @@ import java.util.Random;
 public class Saint extends Sprite {
 
     private static final int WALKING_SPEED = 7;
-    private static final int AM_I_LOST_TIMER = 400;
+    private static final int AM_I_LOST_TIMER = 300;
     private static final int SAINT_DIAMETER = 60;
     private static final int SAINT_RADIUS = SAINT_DIAMETER / 2;
     private static final int MAX_THROWING_CADENCE = 30;
@@ -92,6 +92,7 @@ public class Saint extends Sprite {
                         System.out.println("sending you to retrieve ball");
                         retrieveBall(ball);
                     } else {
+                        System.out.println("i think you are lost");
                         //only safe thing to do here is stop retrieving
                         isRetrieving = false;
                     }

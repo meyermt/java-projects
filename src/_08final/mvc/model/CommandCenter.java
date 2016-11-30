@@ -46,7 +46,7 @@ public class CommandCenter {
 		setScore(0);
 		setNumDiablos(3);
 		spawnDiablo(true);
-		spawnBalls(3);
+		spawnBalls(2);
 		setNewLevel(false);
 	}
 	

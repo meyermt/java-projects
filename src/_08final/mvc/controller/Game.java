@@ -223,11 +223,23 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                     } else if (movFoe instanceof Saint) {
                         Ball ball = (Ball) movFriend;
                         ball.randomFlight();
+                        Saint saint = (Saint) movFoe;
+                        if (saint.hasBall) {
+                            int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                            CommandCenter.getInstance().setSpawnedBallCount(uid);
+                            CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint.getCenter()), CollisionOp.Operation.ADD);
+                        }
                         killFoe(movFoe);
                     }
                 //this means we've gotten beyond the inner radius without a catch and the person is dead
                 } else if (movFriend instanceof Diablo && movFoe instanceof Ball && CommandCenter.getInstance().getKillingBall() != null) {
                     if (CommandCenter.getInstance().getKillingBall().getUID() == ((Ball) movFoe).getUID()) {
+                        Diablo diablo = (Diablo) movFriend;
+                        if (diablo.hasBall) {
+                            int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                            CommandCenter.getInstance().setSpawnedBallCount(uid);
+                            CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo.getCenter()), CollisionOp.Operation.ADD);
+                        }
                         killDiablo(movFriend);
                         CommandCenter.getInstance().setKillingBall(null);
                     }
@@ -427,7 +439,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
             if (CommandCenter.getInstance().getLevel() != 0) {
                 CommandCenter.getInstance().setNewLevel(true);
             }
-            CommandCenter.getInstance().spawnBalls(CommandCenter.getInstance().getLevel());
+            CommandCenter.getInstance().clearAll();
+            CommandCenter.getInstance().spawnDiablo(true);
+            CommandCenter.getInstance().spawnBalls(CommandCenter.getInstance().getLevel() + 1);
             spawnSaints(CommandCenter.getInstance().getLevel() + 1);
 			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
 		}
