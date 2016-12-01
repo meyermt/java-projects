@@ -24,6 +24,8 @@ public class Ball extends Sprite {
     private Saint saintRetriever;
     private Sprite thrower;
     private Random random = new Random();
+    private int pointsCounter = 0;
+    private int pointsMultiplier = 0;
 
     /**
      * Three ways balls are constructed. One is initial center line. Uses this constructor. this requires knowledge of ball position
@@ -63,6 +65,12 @@ public class Ball extends Sprite {
         setDeltaX( Math.cos(radians) * ballSpeed );
         setDeltaY( Math.sin(radians) * ballSpeed );
         setDirection();
+        pointsCounter++;
+        pointsMultiplier = (int) sprite.getThrowingSpeed();
+    }
+
+    public int getPoints() {
+        return pointsCounter * pointsMultiplier;
     }
 
     public void setThrower(Sprite thrower) {

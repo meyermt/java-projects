@@ -50,7 +50,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	private Clip clpMusicBackground;
 
 	private static final int SPAWN_NEW_SHIP_FLOATER = 1200;
-
+    private Random random = new Random();
 
 
 	// ===============================================
@@ -185,7 +185,10 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 					saint.setBall(null);
                     int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
                     CommandCenter.getInstance().setSpawnedBallCount(uid);
-					CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint, (int) diablo.getCenter().getX(), (int) diablo.getCenter().getY()), CollisionOp.Operation.ADD);
+                    int randomVar = random.nextInt(20) - random.nextInt(20);
+                    int diabloX = (int) diablo.getCenter().getX() - randomVar;
+                    int diabloY = (int) diablo.getCenter().getY() - randomVar;
+					CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint, diabloX, diabloY), CollisionOp.Operation.ADD);
 				}
 			}
 		}
@@ -220,7 +223,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                         } else {
                             CommandCenter.getInstance().setKillingBall(ball);
                         }
-                    } else if (movFoe instanceof Saint) {
+                    } else if (movFoe instanceof Saint && movFriend instanceof Ball) {
                         Ball ball = (Ball) movFriend;
                         ball.randomFlight();
                         Saint saint = (Saint) movFoe;
@@ -230,16 +233,18 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                             CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint.getCenter()), CollisionOp.Operation.ADD);
                         }
                         killFoe(movFoe);
+                        CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + ball.getPoints());
                     }
-                //this means we've gotten beyond the inner radius without a catch and the person is dead
                 } else if (movFriend instanceof Diablo && movFoe instanceof Ball && CommandCenter.getInstance().getKillingBall() != null) {
                     if (CommandCenter.getInstance().getKillingBall().getUID() == ((Ball) movFoe).getUID()) {
                         Diablo diablo = (Diablo) movFriend;
+                        Ball ball = (Ball) movFoe;
                         if (diablo.hasBall) {
-                            int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
-                            CommandCenter.getInstance().setSpawnedBallCount(uid);
-                            CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo.getCenter()), CollisionOp.Operation.ADD);
+                                int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
+                                CommandCenter.getInstance().setSpawnedBallCount(uid);
+                                CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo.getCenter()), CollisionOp.Operation.ADD);
                         }
+                        ball.randomFlight();
                         killDiablo(movFriend);
                         CommandCenter.getInstance().setKillingBall(null);
                     }
