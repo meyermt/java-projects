@@ -483,18 +483,17 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	}
 
 	private void checkNewLevel(){
-
-		if (isLevelClear() ){
+        if (isLevelClear() ){
+            CommandCenter.getInstance().clearAll();
             if (CommandCenter.getInstance().getDiablo() !=null) {
                 CommandCenter.getInstance().getDiablo().setProtected(true);
             }
             if (CommandCenter.getInstance().getLevel() != 0) {
                 CommandCenter.getInstance().setNewLevel(true);
             }
-            CommandCenter.getInstance().clearAll();
-            CommandCenter.getInstance().spawnDiablo(true);
-            CommandCenter.getInstance().spawnBalls(CommandCenter.getInstance().getLevel() + 1);
             spawnSaints(CommandCenter.getInstance().getLevel() + 1);
+            CommandCenter.getInstance().spawnBalls(CommandCenter.getInstance().getLevel() + 1);
+            CommandCenter.getInstance().spawnDiablo(true);
 			CommandCenter.getInstance().setLevel(CommandCenter.getInstance().getLevel() + 1);
 		}
 	}

@@ -71,10 +71,6 @@ public class Saint extends Sprite {
         lostCounter++;
         Point pnt = getCenter();
 
-        if (ball == null) {
-            System.out.println("there is no ball");
-        }
-
         if (isCommandingRetrieval) {
             commandRetrieval();
             isCommandingRetrieval = false;
@@ -161,7 +157,6 @@ public class Saint extends Sprite {
         isRetrieving = true;
         isCommandingRetrieval = true;
         this.ball = ball;
-        System.out.println("retrieving ball");
     }
 
     private void commandRetrieval() {

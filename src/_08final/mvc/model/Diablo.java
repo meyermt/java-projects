@@ -72,6 +72,7 @@ public class Diablo extends Sprite {
 
     @Override
     public void move() {
+        Point pnt = getCenter();
         setDeltaX(0);
         setDeltaY(0);
         if (CommandCenter.getInstance().isMaxWalkingSpeedFloater()) {
@@ -87,6 +88,20 @@ public class Diablo extends Sprite {
             }
             setDeltaX( Math.cos(radians) * DODGE_SPEED );
             setDeltaY( Math.sin(radians) * DODGE_SPEED );
+            System.out.println("x change from " + pnt.x + " by "+ getDeltaX());
+            System.out.println("y change from " + pnt.y + " by "+ getDeltaY());
+            if (getDeltaX() + pnt.x - DIABLO_RADIUS< 0) {
+                setDeltaX(0);
+            }
+            if (getDeltaX() + pnt.x + DIABLO_RADIUS > Game.ARENA_WIDTH / 2) {
+                setDeltaX(0);
+            }
+            if (getDeltaY() + pnt.y - DIABLO_RADIUS < 0) {
+                setDeltaY(0);
+            }
+            if (getDeltaY() + pnt.y + DIABLO_DIAMETER > Game.ARENA_HEIGHT) {
+                setDeltaY(0);
+            }
         } else if (isCatching) {
             //you can't move when catching
         } else if (isReleasingThrow) {
@@ -113,7 +128,6 @@ public class Diablo extends Sprite {
             }
         }
 
-        Point pnt = getCenter();
         double dX = pnt.x + getDeltaX();
         double dY = pnt.y + getDeltaY();
         setCenter(new Point((int) dX, (int) dY));
