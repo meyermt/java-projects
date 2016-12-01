@@ -26,6 +26,7 @@ public class Saint extends Sprite {
     public boolean isThrowing;
     public boolean isReleasingThrow;
     private boolean isJumping;
+    private boolean isCommandingRetrieval;
     public boolean hasBall;
     public boolean isCatching;
     private boolean isFacingLeft;
@@ -61,7 +62,9 @@ public class Saint extends Sprite {
         setDeltaY(Math.sin(radians) * WALKING_SPEED);
         setWalkingByRadians();
         isRetrieving = false;
+        isCommandingRetrieval = false;
         ball = null;
+        lostCounter = 0;
     }
 
     @Override
@@ -69,35 +72,75 @@ public class Saint extends Sprite {
         lostCounter++;
         Point pnt = getCenter();
 
-        setDeltaX(Math.cos(radians) * WALKING_SPEED);
-        setDeltaY(Math.sin(radians) * WALKING_SPEED);
+        if (ball == null) {
+            System.out.println("there is no ball");
+        }
 
+        if (isCommandingRetrieval) {
+            commandRetrieval();
+            isCommandingRetrieval = false;
+        }
+
+//        setDeltaX(Math.cos(radians) * WALKING_SPEED);
+//        setDeltaY(Math.sin(radians) * WALKING_SPEED);
+        System.out.println("is saint retrieving? " + isRetrieving);
+        bounceOffEdges(pnt);
             if (!isRetrieving) {
-                bounceOffEdges(pnt);
+//                System.out.println("not retrieving bouncing off");
+
             } else {
-                if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH) {
-                    setDeltaX(0);
+                    lostCounter++;
+                if (lostCounter > AM_I_LOST_TIMER) {
+                    isRetrieving = false;
+                    ball.setSaintRetriever(null);
+                    setBall(null);
+                    lostCounter = 0;
                 }
-                if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY) {
-                    setDeltaX(0);
-                }
-                if (pnt.y + SAINT_DIAMETER > Game.ARENA_HEIGHT) {
-                    setDeltaY(0);
-                }
-                if (pnt.y - SAINT_RADIUS < 0) {
-                    setDeltaY(0);
-                }
-                if (lostCounter % AM_I_LOST_TIMER == 0) {
-                    if (ball != null) {
-                        System.out.println("sending you to retrieve ball");
-                        retrieveBall(ball);
-                    } else {
-                        System.out.println("i think you are lost");
-                        //only safe thing to do here is stop retrieving
-                        isRetrieving = false;
-                    }
-                }
+//                System.out.println("hit a wall retrieving");
+
+//                if (ball == null) {
+//                    System.out.println("null ball retrieving?");
+//                }
+//                if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH) {
+//                    //setDeltaX(0);
+//                    //retrieveBall(ball);
+//
+//                    System.out.println("hit right wall");
+//                }
+//                if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY) {
+//                    //setDeltaX(0);
+//                    //retrieveBall(ball);
+//                    System.out.println("hit left wall");
+//                }
+//                if (pnt.y + SAINT_DIAMETER > Game.ARENA_HEIGHT) {
+//                    //setDeltaY(0);
+//                    //retrieveBall(ball);
+//                    System.out.println("hit bottom wall");
+//                }
+//                if (pnt.y - SAINT_RADIUS < 0) {
+//                    //setDeltaY(0);
+//                    //retrieveBall(ball);
+//                    System.out.println("hit top wall");
+//                }
             }
+//                } else {
+//                    System.out.println("ball is null gonna stop retrieving");
+//                    //this is workaround for a bug
+//                    isRetrieving = false;
+//                }
+//                if (lostCounter % AM_I_LOST_TIMER == 0) {
+//                    if (ball != null) {
+//                        System.out.println("sending you to retrieve ball");
+//                        retrieveBall(ball);
+//                    } else {
+//                        System.out.println("i think you are lost");
+//                        //only safe thing to do here is stop retrieving
+//                        isRetrieving = false;
+//                    }
+//                }
+                setDeltaX(Math.cos(radians) * WALKING_SPEED);
+                setDeltaY(Math.sin(radians) * WALKING_SPEED);
+            //}
                 double dX = pnt.x + getDeltaX();
                 double dY = pnt.y + getDeltaY();
                 setCenter(new Point((int) dX, (int) dY));
@@ -117,8 +160,7 @@ public class Saint extends Sprite {
         } else if (pnt.y + SAINT_DIAMETER> Game.ARENA_HEIGHT && !isWalkingUp) {
             radians = (2 * Math.PI) - radians;
             isWalkingUp = true;
-        }
-        if (pnt.y - SAINT_RADIUS < 0 && isWalkingUp) {
+        } else if (pnt.y - SAINT_RADIUS < 0 && isWalkingUp) {
             radians = (2 * Math.PI) - radians;
             isWalkingUp = false;
         } else {
@@ -163,12 +205,25 @@ public class Saint extends Sprite {
     }
 
     public void retrieveBall(Ball ball) {
+        isRetrieving = true;
+        isCommandingRetrieval = true;
+        this.ball = ball;
+        System.out.println("retrieving ball");
+    }
+
+    private void commandRetrieval() {
         ballXCoords = ball.getCenter().getX();
         ballYCoords = ball.getCenter().getY();
-        System.out.println("retrieving at y: " + ballYCoords);
-        System.out.println("retrieving at x: " + ballXCoords);
-        radians = Math.atan2((ballYCoords - getCenter().getY()), (ballXCoords - getCenter().getX()));
+        radians = Math.atan2((ballYCoords - getCenter().getY() + getDeltaY()), (ballXCoords - getCenter().getX() + getDeltaX()));
         setWalkingByRadians();
+    }
+
+    public void pickUpBall(Ball ball) {
+        //just in case we picked up a ball on the way to a ball
+        ball.setSaintRetriever(this);
+        this.ball = ball;
+        isRetrieving = false;
+        hasBall = true;
     }
 
     public Ball getBall() {
@@ -201,14 +256,4 @@ public class Saint extends Sprite {
         }
     }
 
-    private void setGraphicDirections(double radians) {
-        double angle = Math.toDegrees(radians);
-        if (angle < 180) {
-            isFacingLeft = false;
-            isFacingRight = true;
-        } else {
-            isFacingLeft = true;
-            isFacingRight = false;
-        }
-    }
 }

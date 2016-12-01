@@ -154,15 +154,15 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 						double xDiff = movFoe.getCenter().getX() - movNeutral.getCenter().getX();
 						double yDiff = movFoe.getCenter().getY() - movNeutral.getCenter().getY();
                         //if he's the closest and not already retrieving
-						if (Math.hypot(xDiff, yDiff) < nearest && !((Saint) movFoe).isRetrieving && !((Ball) movNeutral).hasFoeRetriever) {
+						if (Math.hypot(xDiff, yDiff) < nearest && !((Saint) movFoe).isRetrieving &&
+                                ((Ball) movNeutral).getSaintRetriever() == null) {
 							saint = (Saint) movFoe;
                         }
 					}
 				}
 				if (saint != null) {
                     Ball ball = (Ball) movNeutral;
-                    ball.hasFoeRetriever = true;
-                    saint.isRetrieving = true;
+                    ball.setSaintRetriever(saint);
                     saint.retrieveBall(ball);
                 }
 			}
@@ -208,7 +208,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 nFriendCatchRadiux = movFriend.getRadius() / 2;
 
                 if (pntFriendCenter.distance(pntFoeCenter) < (nFriendRadiux + nFoeRadiux) && !CommandCenter.getInstance().getDiablo().getProtected()) {
-                    if (movFriend instanceof  Diablo) {
+                    if (movFriend instanceof  Diablo && movFoe instanceof Ball) {
                         Diablo diablo = (Diablo) movFriend;
                         Ball ball = (Ball) movFoe;
 
@@ -277,9 +277,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                     if (movFoe instanceof Saint && neutral instanceof Ball) {
                         Saint saint = (Saint) movFoe;
                         if (!saint.hasBall) {
-                            saint.hasBall = true;
-                            saint.isRetrieving = false;
-                            saint.setBall((Ball) neutral);
+                            saint.pickUpBall((Ball) neutral);
                             CommandCenter.getInstance().getOpsList().enqueue(neutral, CollisionOp.Operation.REMOVE);
                         }
                     }

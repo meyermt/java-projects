@@ -21,7 +21,7 @@ public class Ball extends Sprite {
     public boolean isMoving;
     public boolean flyingRight;
     public boolean flyingUp;
-    public boolean hasFoeRetriever;
+    private Saint saintRetriever;
     private Sprite thrower;
     private Random random = new Random();
 
@@ -38,7 +38,6 @@ public class Ball extends Sprite {
         setCenter(new Point((Game.ARENA_WIDTH / 2), ballYPos));
         setRadius(BALL_RADIUS);
         isMoving = false;
-        hasFoeRetriever = false;
     }
 
     public Ball(int uid, Point center) {
@@ -47,7 +46,6 @@ public class Ball extends Sprite {
         setCenter(center);
         setRadius(BALL_RADIUS);
         isMoving = false;
-        hasFoeRetriever = false;
     }
 
     /**
@@ -65,7 +63,6 @@ public class Ball extends Sprite {
         setDeltaX( Math.cos(radians) * ballSpeed );
         setDeltaY( Math.sin(radians) * ballSpeed );
         setDirection();
-        hasFoeRetriever = false;
     }
 
     public void setThrower(Sprite thrower) {
@@ -141,4 +138,13 @@ public class Ball extends Sprite {
     public int getUID() {
         return uid;
     }
+
+    public Saint getSaintRetriever() {
+        return saintRetriever;
+    }
+
+    public void setSaintRetriever(Saint saint) {
+        this.saintRetriever = saint;
+    }
+
 }
