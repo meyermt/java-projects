@@ -14,6 +14,8 @@ public class CommandCenter {
 	private boolean bPlaying;
 	private boolean bPaused;
 	private boolean isNewLevel;
+	private boolean isMaxWalkingSpeedFloater;
+	private boolean isMaxThrowingSpeedFloater;
 	private int spawnedBalls;
 	
 	// These ArrayLists with capacities set
@@ -163,6 +165,14 @@ public class CommandCenter {
 	public void setKillingBall(Ball killingBall){
 		this.killingBall = killingBall;
 	}
+
+	public boolean isMaxWalkingSpeedFloater() { return isMaxWalkingSpeedFloater; }
+
+	public void setMaxWalkingSpeedFloater(boolean isMaxWalkingSpeedFloater) { this.isMaxWalkingSpeedFloater = isMaxWalkingSpeedFloater; }
+
+	public boolean isMaxThrowingSpeedFloater() { return isMaxThrowingSpeedFloater; }
+
+	public void setMaxThrowingSpeedFloater(boolean isMaxThrowingSpeedFloater) { this.isMaxThrowingSpeedFloater = isMaxThrowingSpeedFloater; }
 
 	public List<Movable> getMovDebris() {
 		return movDebris;

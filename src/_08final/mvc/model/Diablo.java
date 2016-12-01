@@ -25,13 +25,8 @@ public class Diablo extends Sprite {
     //positions in this array: 0 - holding and standing, 1 - holding and walking, 2 - throwing
     private SpriteSheet dBall = new SpriteSheet("diablo-ball.png", 31, 28);
     private BufferedImage[] diabloPhases;
-    private int throwingAccuracy; //how close is he to where you point to throw
-    private int jumpingPower; //how far he can jump
-    private int jumpingSpeed; //speed with which he jumps
-    private int specialMove; //i dunno, maybe you pick one. better if he acquires them though
-    private int catchRange; //basically, how exact do you have to be with when the ball gets to him to catch it
-    private int catchAccuracy; //probability he catches stuff
 
+    private int walkingSpeed;
     private boolean bProtected; //for fade in and out
     public boolean isThrowing;
     public boolean isReleasingThrow;
@@ -72,12 +67,18 @@ public class Diablo extends Sprite {
         System.arraycopy(dThrowingPhases, 0, diabloPhases, dWalkingPhases.length + dCatchingPhases.length, dThrowingPhases.length);
         isCatching = false;
         setProtected(true);
+        walkingSpeed = WALKING_SPEED;
     }
 
     @Override
     public void move() {
         setDeltaX(0);
         setDeltaY(0);
+        if (CommandCenter.getInstance().isMaxWalkingSpeedFloater()) {
+            walkingSpeed = WALKING_SPEED * 2;
+        } else {
+            walkingSpeed = WALKING_SPEED;
+        }
         if (isJumping) {
             dodgeCounter++;
             if (dodgeCounter > DODGE_COUNT) {
@@ -97,18 +98,18 @@ public class Diablo extends Sprite {
             if (walkingLeft && (getCenter().getX() - DIABLO_RADIUS > 0)) {
                 isFacingRight = false;
                 isFacingLeft = true;
-                setDeltaX(-WALKING_SPEED);
+                setDeltaX(-walkingSpeed);
             }
             if (walkingRight && (getCenter().getX() + DIABLO_RADIUS < Game.ARENA_WIDTH / 2)) {
                 isFacingRight = true;
                 isFacingLeft = false;
-                setDeltaX(WALKING_SPEED);
+                setDeltaX(walkingSpeed);
             }
             if (walkingUp && (getCenter().getY() - DIABLO_RADIUS > 0)) {
-                setDeltaY(-WALKING_SPEED);
+                setDeltaY(-walkingSpeed);
             }
             if (walkingDown && (getCenter().getY() + DIABLO_DIAMETER < Game.ARENA_HEIGHT)) {
-                setDeltaY(WALKING_SPEED);
+                setDeltaY(walkingSpeed);
             }
         }
 
@@ -190,7 +191,9 @@ public class Diablo extends Sprite {
 
     //longer it is held, more updates made
     private void updateThrowingSpeed() {
-        if (getThrowingSpeed() < MAX_THROWING_SPEED) {
+        if (CommandCenter.getInstance().isMaxThrowingSpeedFloater()) {
+            setThrowingSpeed(MAX_THROWING_SPEED);
+        }else if (getThrowingSpeed() < MAX_THROWING_SPEED) {
             setThrowingSpeed(getThrowingSpeed() + 1);
         }
     }

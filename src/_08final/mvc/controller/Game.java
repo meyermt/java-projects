@@ -45,12 +45,12 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
             MUTE = 77, // m-key mute
             QUIT = 81; // q key					// fire special weapon;  F key
 
-	private Clip clpDiabloGrunt;
-    private Clip clpSaintGrunt;
-    private Clip clpBallHit;
 	private Clip clpMusicBackground;
 
-	private static final int SPAWN_NEW_SHIP_FLOATER = 1200;
+	private static final int SPAWN_NEW_THROWING_FLOATER = 1200;
+    private static final int SPAWN_NEW_WALKING_FLOATER = 600;
+    private int throwingFloaterTimer = 0;
+    private int walkingFloaterTimer = 0;
     private Random random = new Random();
 
 
@@ -64,9 +64,6 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		gmpPanel.addKeyListener(this);
 		gmpPanel.addMouseListener(this);
 		gmpPanel.addMouseMotionListener(this);
-		clpDiabloGrunt = Sound.clipForLoopFactory("diablo-grunt.wav");
-        clpSaintGrunt = Sound.clipForLoopFactory("saint-grunt.wav");
-        clpBallHit = Sound.clipForLoopFactory("ball-hit.wav");
 		clpMusicBackground = Sound.clipForLoopFactory("dball-background.wav");
 	}
 
@@ -119,6 +116,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 			checkCollisionsAndJumps();
             processDeadBalls();
             processFrameTransactions();
+            spawnAndStopFloaters();
 			//this might be a god place to check if the level is clear (no more foes)
 			//if the level is clear then spawn some big asteroids -- the number of asteroids 
 			//should increase with the level. 
@@ -183,6 +181,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 					saint.hasBall = false;
 					saint.isThrowing = false;
 					saint.isReleasingThrow = true;
+                    Sound.playSound("saint-grunt.wav");
 					saint.setBall(null);
                     int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
                     CommandCenter.getInstance().setSpawnedBallCount(uid);
@@ -237,6 +236,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                             CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, saint.getCenter()), CollisionOp.Operation.ADD);
                         }
                         killFoe(movFoe);
+                        Sound.playSound("ball-hit.wav");
                         CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + ball.getPoints());
                     }
                 } else if (movFriend instanceof Diablo && movFoe instanceof Ball && CommandCenter.getInstance().getKillingBall() != null) {
@@ -250,6 +250,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                         }
                         ball.randomFlight();
                         killDiablo(movFriend);
+                        Sound.playSound("ball-hit.wav");
                         CommandCenter.getInstance().setKillingBall(null);
                     }
                 }
@@ -293,6 +294,33 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 }
             }
         }
+
+        if (CommandCenter.getInstance().getDiablo() != null){
+            Point pntDiabloCenter = CommandCenter.getInstance().getDiablo().getCenter();
+            int nDiabloRadiux = CommandCenter.getInstance().getDiablo().getRadius();
+            Point pntFloaterCenter;
+            int nFloaterRadiux;
+
+            for (Movable movFloater : CommandCenter.getInstance().getMovFloaters()) {
+                pntFloaterCenter = movFloater.getCenter();
+                nFloaterRadiux = movFloater.getRadius();
+
+                //detect collision
+                if (pntDiabloCenter.distance(pntFloaterCenter) < (nDiabloRadiux + nFloaterRadiux)) {
+
+                    if (movFloater instanceof MaxThrowingFloater) {
+                        CommandCenter.getInstance().setMaxThrowingSpeedFloater(true);
+                        throwingFloaterTimer = nTick + 100;
+                    } else if (movFloater instanceof MaxWalkingFloater) {
+                        CommandCenter.getInstance().setMaxWalkingSpeedFloater(true);
+                        walkingFloaterTimer = nTick + 100;
+                    }
+
+                    CommandCenter.getInstance().getOpsList().enqueue(movFloater, CollisionOp.Operation.REMOVE);
+
+                }//end if
+            }//end inner for
+        }//end if not null
     }
 
     /*
@@ -413,6 +441,23 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		}
 	}
 
+    private void spawnAndStopFloaters() {
+
+        if (CommandCenter.getInstance().isMaxThrowingSpeedFloater() && nTick > throwingFloaterTimer) {
+            CommandCenter.getInstance().setMaxThrowingSpeedFloater(false);
+        }
+        if (CommandCenter.getInstance().isMaxWalkingSpeedFloater() && nTick > walkingFloaterTimer) {
+            CommandCenter.getInstance().setMaxWalkingSpeedFloater(false);
+        }
+
+        if (nTick % (SPAWN_NEW_THROWING_FLOATER - nLevel * 7) == 0) {
+            CommandCenter.getInstance().getOpsList().enqueue(new MaxThrowingFloater(), CollisionOp.Operation.ADD);
+        }
+        if (nTick % (SPAWN_NEW_WALKING_FLOATER - nLevel * 7) == 0) {
+            CommandCenter.getInstance().getOpsList().enqueue(new MaxWalkingFloater(), CollisionOp.Operation.ADD);
+        }
+    }
+
 	// Called when user presses 's'
 	private void startGame() {
 		CommandCenter.getInstance().clearAll();
@@ -481,7 +526,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
         } else if (nKey == PAUSE){
             CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
             if (CommandCenter.getInstance().isPaused()) {
-                stopLoopingSounds(clpMusicBackground, clpBallHit, clpDiabloGrunt, clpSaintGrunt);
+                stopLoopingSounds(clpMusicBackground);
             } else {
                 clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
             }
@@ -571,6 +616,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 				diablo.hasBall = false;
 				diablo.isThrowing = false;
 				diablo.isReleasingThrow = true;
+                Sound.playSound("diablo-grunt.wav");
                 int uid = CommandCenter.getInstance().getSpawnedBallCount() + 1;
                 CommandCenter.getInstance().setSpawnedBallCount(uid);
 				CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
