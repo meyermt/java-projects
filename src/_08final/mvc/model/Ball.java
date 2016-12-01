@@ -114,7 +114,7 @@ public class Ball extends Sprite {
 
     public void randomFlight() {
         Point pnt = getCenter();
-        radians = random.nextDouble() * 2;
+        radians = (random.nextDouble() * Math.PI) - (random.nextDouble() * Math.PI);
         setDeltaX( Math.cos(radians) * ballSpeed );
         setDeltaY( Math.sin(radians) * ballSpeed );
         setDirection();

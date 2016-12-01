@@ -59,7 +59,7 @@ public class GamePanel extends Panel {
 		g.setColor(Color.white);
 		g.setFont(fnt);
 		if (CommandCenter.getInstance().getScore() != 0) {
-			g.drawString("SCORE :  " + CommandCenter.getInstance().getScore(), nFontWidth, nFontHeight);
+			g.drawString("SCORE :  " + CommandCenter.getInstance().getScore(), nFontWidth, (int) Game.DIM.getHeight() - 50);
 		} else {
 			g.drawString("NO SCORE", nFontWidth, (int) Game.DIM.getHeight() - 50);
 		}
@@ -111,6 +111,7 @@ public class GamePanel extends Panel {
 
 			drawNumberDiablosLeft(grpOff);
 			if (CommandCenter.getInstance().isGameOver()) {
+                CommandCenter.getInstance().clearAll();
 				CommandCenter.getInstance().setPlaying(false);
 				//bPlaying = false;
 			}
@@ -146,7 +147,7 @@ public class GamePanel extends Panel {
 	// Draw the number of falcons left on the bottom-right of the screen. 
 	private void drawNumberDiablosLeft(Graphics g) {
         Diablo diablo = CommandCenter.getInstance().getDiablo();
-        int xCoord = Game.ARENA_WIDTH / 5;
+        int xCoord = Game.ARENA_WIDTH / 4;
         int yCoord = (int) Game.DIM.getHeight() - Diablo.DIABLO_DIAMETER - 20;
         for (int nD = 1; nD < CommandCenter.getInstance().getNumDiablos(); nD++) {
             g.drawImage(diablo.getDiabloPic().getScaledInstance(Diablo.DIABLO_RADIUS, Diablo.DIABLO_RADIUS, 0), xCoord, yCoord, null);

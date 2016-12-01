@@ -11,8 +11,6 @@ import java.awt.event.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 // ===============================================
 // == This Game class is the CONTROLLER
@@ -44,9 +42,12 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
 	private final int PAUSE = 80, // p key
 			START = KeyEvent.VK_ENTER, // s key
+            MUTE = 77, // m-key mute
             QUIT = 81; // q key					// fire special weapon;  F key
 
-	private Clip clpThrust;
+	private Clip clpDiabloGrunt;
+    private Clip clpSaintGrunt;
+    private Clip clpBallHit;
 	private Clip clpMusicBackground;
 
 	private static final int SPAWN_NEW_SHIP_FLOATER = 1200;
@@ -63,10 +64,10 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 		gmpPanel.addKeyListener(this);
 		gmpPanel.addMouseListener(this);
 		gmpPanel.addMouseMotionListener(this);
-		clpThrust = Sound.clipForLoopFactory("whitenoise.wav");
-		clpMusicBackground = Sound.clipForLoopFactory("music-background.wav");
-
-
+		clpDiabloGrunt = Sound.clipForLoopFactory("diablo-grunt.wav");
+        clpSaintGrunt = Sound.clipForLoopFactory("saint-grunt.wav");
+        clpBallHit = Sound.clipForLoopFactory("ball-hit.wav");
+		clpMusicBackground = Sound.clipForLoopFactory("dball-background.wav");
 	}
 
 	// ===============================================
@@ -217,14 +218,17 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
                         if (pntFriendCenter.distance(pntFoeCenter) < (nFriendCatchRadiux + nFoeRadiux) && ((Diablo) movFriend).isCatching) {
                             CommandCenter.getInstance().getOpsList().enqueue(ball.getThrower(), CollisionOp.Operation.REMOVE);
+                            CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + ball.getPoints());
                             CommandCenter.getInstance().getOpsList().enqueue(ball, CollisionOp.Operation.REMOVE);
                             CommandCenter.getInstance().setKillingBall(null);
                             diablo.hasBall = true;
+                            diablo.isCatching = false;
                         } else {
                             CommandCenter.getInstance().setKillingBall(ball);
                         }
                     } else if (movFoe instanceof Saint && movFriend instanceof Ball) {
                         Ball ball = (Ball) movFriend;
+                        //System.out.println("about to fly weird");
                         ball.randomFlight();
                         Saint saint = (Saint) movFoe;
                         if (saint.hasBall) {
@@ -476,11 +480,11 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
             CommandCenter.getInstance().setNewLevel(false);
         } else if (nKey == PAUSE){
             CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
-            //if (CommandCenter.getInstance().isPaused())
-                //  stopLoopingSounds(clpMusicBackground, clpThrust);
-            //else
-                //TODO: add your music here
-                //clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
+            if (CommandCenter.getInstance().isPaused()) {
+                stopLoopingSounds(clpMusicBackground, clpBallHit, clpDiabloGrunt, clpSaintGrunt);
+            } else {
+                clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
+            }
         } else if (nKey == QUIT) {
             System.exit(0);
         }
@@ -507,6 +511,17 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	public void keyReleased(KeyEvent e) {
 		Diablo diablo = CommandCenter.getInstance().getDiablo();
 		int releasedKey = e.getKeyCode();
+
+        if (releasedKey == MUTE) {
+            if (!bMuted){
+                stopLoopingSounds(clpMusicBackground);
+                bMuted = !bMuted;
+            }
+            else {
+                clpMusicBackground.loop(Clip.LOOP_CONTINUOUSLY);
+                bMuted = !bMuted;
+            }
+        }
 
 		if (diablo != null) {
 			if (releasedKey == KeyEvent.VK_UP) {
@@ -560,7 +575,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 CommandCenter.getInstance().setSpawnedBallCount(uid);
 				CommandCenter.getInstance().getOpsList().enqueue(new Ball(uid, diablo, e.getX(), e.getY()), CollisionOp.Operation.ADD);
 			} else {
-                //diablo.isJumping = true;
+                diablo.dodge(e.getX(), e.getY());
             }
 		} else if (SwingUtilities.isRightMouseButton(e)) {
 			diablo.isCatching = false;

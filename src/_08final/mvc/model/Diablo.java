@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 public class Diablo extends Sprite {
 
     private static final int WALKING_SPEED = 7;
+    private static final int DODGE_COUNT = 3;
+    private static final int DODGE_SPEED = 20;
     public static final int MAX_THROWING_SPEED = 40;
     public static final int DIABLO_DIAMETER = 60;
     public static final int DIABLO_RADIUS = DIABLO_DIAMETER / 2;
@@ -33,7 +35,7 @@ public class Diablo extends Sprite {
     private boolean bProtected; //for fade in and out
     public boolean isThrowing;
     public boolean isReleasingThrow;
-    private boolean isJumping;
+    public boolean isJumping;
     public boolean hasBall;
     public boolean isCatching;
     private boolean isFacingLeft;
@@ -47,8 +49,11 @@ public class Diablo extends Sprite {
     private boolean rightStepSwitch;
     private boolean rightStepThrowingSwitch;
     private int staticSheetPos;
+    private double radians;
+    private int dodgeCounter = 0;
 
     public Diablo() {
+        isJumping = false;
         hasBall = false;
         isThrowing = false;
         isFacingRight = true;
@@ -73,7 +78,15 @@ public class Diablo extends Sprite {
     public void move() {
         setDeltaX(0);
         setDeltaY(0);
-        if (isCatching) {
+        if (isJumping) {
+            dodgeCounter++;
+            if (dodgeCounter > DODGE_COUNT) {
+                isJumping = false;
+                dodgeCounter = 0;
+            }
+            setDeltaX( Math.cos(radians) * DODGE_SPEED );
+            setDeltaY( Math.sin(radians) * DODGE_SPEED );
+        } else if (isCatching) {
             //you can't move when catching
         } else if (isReleasingThrow) {
             //reset throwing speed
@@ -111,6 +124,11 @@ public class Diablo extends Sprite {
         if (getFadeValue() == 50) {
             setProtected(false);
         }
+    }
+
+    public void dodge(int x, int y) {
+        radians = Math.atan2((y - getCenter().getY()), (x - getCenter().getX()));
+        isJumping = true;
     }
 
     @Override

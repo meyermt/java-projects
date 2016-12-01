@@ -48,7 +48,6 @@ public class Saint extends Sprite {
     public Saint() {
     }
 
-    //TODO: should add an intelligence in this constructor at some point
     public Saint(Point startingPoint) {
         isFacingLeft = true;
         isFacingRight = false;
@@ -81,69 +80,23 @@ public class Saint extends Sprite {
             isCommandingRetrieval = false;
         }
 
-//        setDeltaX(Math.cos(radians) * WALKING_SPEED);
-//        setDeltaY(Math.sin(radians) * WALKING_SPEED);
-        System.out.println("is saint retrieving? " + isRetrieving);
         bounceOffEdges(pnt);
-            if (!isRetrieving) {
-//                System.out.println("not retrieving bouncing off");
-
-            } else {
-                    lostCounter++;
+            if (isRetrieving) {
+                lostCounter++;
                 if (lostCounter > AM_I_LOST_TIMER) {
                     isRetrieving = false;
-                    ball.setSaintRetriever(null);
                     setBall(null);
                     lostCounter = 0;
+                    if (ball != null) {
+                        ball.setSaintRetriever(null);
+                    }
                 }
-//                System.out.println("hit a wall retrieving");
-
-//                if (ball == null) {
-//                    System.out.println("null ball retrieving?");
-//                }
-//                if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH) {
-//                    //setDeltaX(0);
-//                    //retrieveBall(ball);
-//
-//                    System.out.println("hit right wall");
-//                }
-//                if (pnt.x - SAINT_RADIUS < Game.SAINT_X_TERRITORY) {
-//                    //setDeltaX(0);
-//                    //retrieveBall(ball);
-//                    System.out.println("hit left wall");
-//                }
-//                if (pnt.y + SAINT_DIAMETER > Game.ARENA_HEIGHT) {
-//                    //setDeltaY(0);
-//                    //retrieveBall(ball);
-//                    System.out.println("hit bottom wall");
-//                }
-//                if (pnt.y - SAINT_RADIUS < 0) {
-//                    //setDeltaY(0);
-//                    //retrieveBall(ball);
-//                    System.out.println("hit top wall");
-//                }
             }
-//                } else {
-//                    System.out.println("ball is null gonna stop retrieving");
-//                    //this is workaround for a bug
-//                    isRetrieving = false;
-//                }
-//                if (lostCounter % AM_I_LOST_TIMER == 0) {
-//                    if (ball != null) {
-//                        System.out.println("sending you to retrieve ball");
-//                        retrieveBall(ball);
-//                    } else {
-//                        System.out.println("i think you are lost");
-//                        //only safe thing to do here is stop retrieving
-//                        isRetrieving = false;
-//                    }
-//                }
-                setDeltaX(Math.cos(radians) * WALKING_SPEED);
-                setDeltaY(Math.sin(radians) * WALKING_SPEED);
-            //}
-                double dX = pnt.x + getDeltaX();
-                double dY = pnt.y + getDeltaY();
-                setCenter(new Point((int) dX, (int) dY));
+        setDeltaX(Math.cos(radians) * WALKING_SPEED);
+        setDeltaY(Math.sin(radians) * WALKING_SPEED);
+        double dX = pnt.x + getDeltaX();
+        double dY = pnt.y + getDeltaY();
+        setCenter(new Point((int) dX, (int) dY));
     }
 
     public void bounceOffEdges(Point pnt) {
@@ -212,10 +165,12 @@ public class Saint extends Sprite {
     }
 
     private void commandRetrieval() {
-        ballXCoords = ball.getCenter().getX();
-        ballYCoords = ball.getCenter().getY();
-        radians = Math.atan2((ballYCoords - getCenter().getY() + getDeltaY()), (ballXCoords - getCenter().getX() + getDeltaX()));
-        setWalkingByRadians();
+        if (ball != null) {
+            ballXCoords = ball.getCenter().getX();
+            ballYCoords = ball.getCenter().getY();
+            radians = Math.atan2((ballYCoords - getCenter().getY()), (ballXCoords - getCenter().getX()));
+            setWalkingByRadians();
+        }
     }
 
     public void pickUpBall(Ball ball) {
