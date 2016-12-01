@@ -217,7 +217,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
                         if (pntFriendCenter.distance(pntFoeCenter) < (nFriendCatchRadiux + nFoeRadiux) && ((Diablo) movFriend).isCatching) {
                             CommandCenter.getInstance().getOpsList().enqueue(ball.getThrower(), CollisionOp.Operation.REMOVE);
-                            CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + ball.getPoints());
+                            CommandCenter.getInstance().setScore((CommandCenter.getInstance().getScore() + ball.getPoints()) * CommandCenter.getInstance().getLevel());
                             CommandCenter.getInstance().getOpsList().enqueue(ball, CollisionOp.Operation.REMOVE);
                             CommandCenter.getInstance().setKillingBall(null);
                             diablo.hasBall = true;
@@ -237,7 +237,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                         }
                         killFoe(movFoe);
                         Sound.playSound("ball-hit.wav");
-                        CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + ball.getPoints());
+                        CommandCenter.getInstance().setScore((CommandCenter.getInstance().getScore() + ball.getPoints()) * CommandCenter.getInstance().getLevel());
                     }
                 } else if (movFriend instanceof Diablo && movFoe instanceof Ball && CommandCenter.getInstance().getKillingBall() != null) {
                     if (CommandCenter.getInstance().getKillingBall().getUID() == ((Ball) movFoe).getUID()) {
