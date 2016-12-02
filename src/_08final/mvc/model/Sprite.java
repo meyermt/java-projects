@@ -5,6 +5,9 @@ import _08final.mvc.controller.Game;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * The type Sprite.
+ */
 public abstract class Sprite implements Movable {
 	//the center-point of this sprite
 	private Point pntCenter;
@@ -24,10 +27,16 @@ public abstract class Sprite implements Movable {
 	//the color of this sprite
 	private Color col;
 
-	//radial coordinates
+    /**
+     * The D lengths.
+     */
+//radial coordinates
 	//this game uses radial coordinates to render sprites
 	public double[] dLengths;
-	public double[] dDegrees;
+    /**
+     * The D degrees.
+     */
+    public double[] dDegrees;
 	
 
 	//fade value for fading in and out
@@ -48,7 +57,12 @@ public abstract class Sprite implements Movable {
 	  return mTeam;
 	}
 
-	public void setTeam(Team team){
+    /**
+     * Set team.
+     *
+     * @param team the team
+     */
+    public void setTeam(Team team){
 		mTeam = team;
 	}
 
@@ -76,7 +90,10 @@ public abstract class Sprite implements Movable {
 
 	}
 
-	public Sprite() {
+    /**
+     * Instantiates a new Sprite.
+     */
+    public Sprite() {
 
 	//you can override this and many more in the subclasses
 		setDim(Game.DIM);
@@ -87,66 +104,141 @@ public abstract class Sprite implements Movable {
 
 	}
 
-	public void setExpire(int n) {
+    /**
+     * Sets expire.
+     *
+     * @param n the n
+     */
+    public void setExpire(int n) {
 		nExpiry = n;
 
 	}
 
-	public double[] getLengths() {
+    /**
+     * Get lengths double [ ].
+     *
+     * @return the double [ ]
+     */
+    public double[] getLengths() {
 		return this.dLengths;
 	}
 
-	public void setLengths(double[] dLengths) {
+    /**
+     * Sets lengths.
+     *
+     * @param dLengths the d lengths
+     */
+    public void setLengths(double[] dLengths) {
 		this.dLengths = dLengths;
 	}
 
-	public double[] getDegrees() {
+    /**
+     * Get degrees double [ ].
+     *
+     * @return the double [ ]
+     */
+    public double[] getDegrees() {
 		return this.dDegrees;
 	}
 
-	public void setDegrees(double[] dDegrees) {
+    /**
+     * Sets degrees.
+     *
+     * @param dDegrees the d degrees
+     */
+    public void setDegrees(double[] dDegrees) {
 		this.dDegrees = dDegrees;
 	}
 
-	public Color getColor() {
+    /**
+     * Gets color.
+     *
+     * @return the color
+     */
+    public Color getColor() {
 		return col;
 	}
 
-	public void setColor(Color col) {
+    /**
+     * Sets color.
+     *
+     * @param col the col
+     */
+    public void setColor(Color col) {
 		this.col = col;
 
 	}
 
-	public int points() {
+    /**
+     * Points int.
+     *
+     * @return the int
+     */
+    public int points() {
 		//default is zero
 		return 0;
 	}
 
-	public int getExpire() {
+    /**
+     * Gets expire.
+     *
+     * @return the expire
+     */
+    public int getExpire() {
 		return nExpiry;
 	}
 
-	public int getOrientation() {
+    /**
+     * Gets orientation.
+     *
+     * @return the orientation
+     */
+    public int getOrientation() {
 		return nOrientation;
 	}
 
-	public void setOrientation(int n) {
+    /**
+     * Sets orientation.
+     *
+     * @param n the n
+     */
+    public void setOrientation(int n) {
 		nOrientation = n;
 	}
 
-	public void setDeltaX(double dSet) {
+    /**
+     * Sets delta x.
+     *
+     * @param dSet the d set
+     */
+    public void setDeltaX(double dSet) {
 		dDeltaX = dSet;
 	}
 
-	public void setDeltaY(double dSet) {
+    /**
+     * Sets delta y.
+     *
+     * @param dSet the d set
+     */
+    public void setDeltaY(double dSet) {
 		dDeltaY = dSet;
 	}
 
-	public double getDeltaY() {
+    /**
+     * Gets delta y.
+     *
+     * @return the delta y
+     */
+    public double getDeltaY() {
 		return dDeltaY;
 	}
 
-	public double getDeltaX() {
+    /**
+     * Gets delta x.
+     *
+     * @return the delta x
+     */
+    public double getDeltaX() {
 		return dDeltaX;
 	}
 
@@ -154,16 +246,31 @@ public abstract class Sprite implements Movable {
 		return nRadius;
 	}
 
-	public void setRadius(int n) {
+    /**
+     * Sets radius.
+     *
+     * @param n the n
+     */
+    public void setRadius(int n) {
 		nRadius = n;
 
 	}
 
-	public Dimension getDim() {
+    /**
+     * Gets dim.
+     *
+     * @return the dim
+     */
+    public Dimension getDim() {
 		return dim;
 	}
 
-	public void setDim(Dimension dim) {
+    /**
+     * Sets dim.
+     *
+     * @param dim the dim
+     */
+    public void setDim(Dimension dim) {
 		this.dim = dim;
 	}
 
@@ -171,53 +278,114 @@ public abstract class Sprite implements Movable {
 		return pntCenter;
 	}
 
-	public void setCenter(Point pntParam) {
+    /**
+     * Sets center.
+     *
+     * @param pntParam the pnt param
+     */
+    public void setCenter(Point pntParam) {
 		pntCenter = pntParam;
 	}
 
 
-	public void setYcoord(int nValue, int nIndex) {
+    /**
+     * Sets ycoord.
+     *
+     * @param nValue the n value
+     * @param nIndex the n index
+     */
+    public void setYcoord(int nValue, int nIndex) {
 		nYCoords[nIndex] = nValue;
 	}
 
-	public void setXcoord(int nValue, int nIndex) {
+    /**
+     * Sets xcoord.
+     *
+     * @param nValue the n value
+     * @param nIndex the n index
+     */
+    public void setXcoord(int nValue, int nIndex) {
 		nXCoords[nIndex] = nValue;
 	}
-	
-	
-	public int getYcoord( int nIndex) {
+
+
+    /**
+     * Gets ycoord.
+     *
+     * @param nIndex the n index
+     * @return the ycoord
+     */
+    public int getYcoord( int nIndex) {
 		return nYCoords[nIndex];// = nValue;
 	}
 
-	public int getXcoord( int nIndex) {
+    /**
+     * Gets xcoord.
+     *
+     * @param nIndex the n index
+     * @return the xcoord
+     */
+    public int getXcoord( int nIndex) {
 		return nXCoords[nIndex];// = nValue;
 	}
-	
-	
 
-	public int[] getXcoords() {
+
+    /**
+     * Get xcoords int [ ].
+     *
+     * @return the int [ ]
+     */
+    public int[] getXcoords() {
 		return nXCoords;
 	}
 
-	public int[] getYcoords() {
+    /**
+     * Get ycoords int [ ].
+     *
+     * @return the int [ ]
+     */
+    public int[] getYcoords() {
 		return nYCoords;
 	}
-	
-	
-	public void setXcoords( int[] nCoords) {
+
+
+    /**
+     * Sets xcoords.
+     *
+     * @param nCoords the n coords
+     */
+    public void setXcoords( int[] nCoords) {
 		 nXCoords = nCoords;
 	}
 
-	public void setYcoords(int[] nCoords) {
+    /**
+     * Sets ycoords.
+     *
+     * @param nCoords the n coords
+     */
+    public void setYcoords(int[] nCoords) {
 		 nYCoords =nCoords;
 	}
 
-	protected double hypot(double dX, double dY) {
+    /**
+     * Hypot double.
+     *
+     * @param dX the d x
+     * @param dY the d y
+     * @return the double
+     */
+    protected double hypot(double dX, double dY) {
 		return Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
 	}
 
-	
-	//utility function to convert from cartesian to polar
+
+    /**
+     * Convert to polar degs double [ ].
+     *
+     * @param pntPoints the pnt points
+     * @return the double [ ]
+     */
+//utility function to convert from cartesian to polar
 	//since it's much easier to describe a sprite as a list of cartesean points
 	//sprites (except Asteroid) should use the cartesean technique to describe the coordinates
 	//see Falcon or Bullet constructor for examples
@@ -231,7 +399,14 @@ public abstract class Sprite implements Movable {
 		}
 		return dDegs;
 	}
-	//utility function to convert to polar
+
+    /**
+     * Convert to polar lens double [ ].
+     *
+     * @param pntPoints the pnt points
+     * @return the double [ ]
+     */
+//utility function to convert to polar
 	protected double[] convertToPolarLens(ArrayList<Point> pntPoints) {
 
 		double[] dLens = new double[pntPoints.size()];
@@ -259,7 +434,12 @@ public abstract class Sprite implements Movable {
 
 	}
 
-	protected void assignPolarPoints(ArrayList<Point> pntCs) {
+    /**
+     * Assign polar points.
+     *
+     * @param pntCs the pnt cs
+     */
+    protected void assignPolarPoints(ArrayList<Point> pntCs) {
 		setDegrees(convertToPolarDegs(pntCs));
 		setLengths(convertToPolarLens(pntCs));
 
@@ -289,29 +469,65 @@ public abstract class Sprite implements Movable {
 //        g.setColor(getColor());
 //        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
     }
-    
 
-	public Point[] getObjectPoints() {
+
+    /**
+     * Get object points point [ ].
+     *
+     * @return the point [ ]
+     */
+    public Point[] getObjectPoints() {
 		return pntCoords;
 	}
-	
-	public void setObjectPoints(Point[] pntPs) {
+
+    /**
+     * Sets object points.
+     *
+     * @param pntPs the pnt ps
+     */
+    public void setObjectPoints(Point[] pntPs) {
 		 pntCoords = pntPs;
 	}
-	
-	public void setObjectPoint(Point pnt, int nIndex) {
+
+    /**
+     * Sets object point.
+     *
+     * @param pnt    the pnt
+     * @param nIndex the n index
+     */
+    public void setObjectPoint(Point pnt, int nIndex) {
 		 pntCoords[nIndex] = pnt;
 	}
 
-	public int getFadeValue() {
+    /**
+     * Gets fade value.
+     *
+     * @return the fade value
+     */
+    public int getFadeValue() {
 		return nFade;
 	}
 
-	public void setFadeValue(int n) {
+    /**
+     * Sets fade value.
+     *
+     * @param n the n
+     */
+    public void setFadeValue(int n) {
 		nFade = n;
 	}
 
-	public void setThrowingSpeed(double throwingSpeed) { this.throwingSpeed = throwingSpeed; }
+    /**
+     * Sets throwing speed.
+     *
+     * @param throwingSpeed the throwing speed
+     */
+    public void setThrowingSpeed(double throwingSpeed) { this.throwingSpeed = throwingSpeed; }
 
-	public double getThrowingSpeed() { return throwingSpeed; }
+    /**
+     * Gets throwing speed.
+     *
+     * @return the throwing speed
+     */
+    public double getThrowingSpeed() { return throwingSpeed; }
 }

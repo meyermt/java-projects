@@ -7,27 +7,52 @@ package _08final.mvc.model;
 
 public class CollisionOp {
 
-    //this could also be a boolean, but we want to be explicit about what we're doing
+    /**
+     * The enum Operation.
+     */
+//this could also be a boolean, but we want to be explicit about what we're doing
     public enum Operation {
-        ADD, REMOVE
+        /**
+         * Add operation.
+         */
+        ADD, /**
+         * Remove operation.
+         */
+        REMOVE
     }
 
     //members
     private Movable mMovable;
     private Operation mOperation;
 
-    //constructor
+    /**
+     * Instantiates a new Collision op.
+     *
+     * @param movable the movable
+     * @param op      the op
+     */
+//constructor
     public CollisionOp(Movable movable, Operation op) {
         mMovable = movable;
         mOperation = op;
     }
 
 
-    //getters
+    /**
+     * Gets movable.
+     *
+     * @return the movable
+     */
+//getters
     public Movable getMovable() {
         return mMovable;
     }
 
+    /**
+     * Gets operation.
+     *
+     * @return the operation
+     */
     public Operation getOperation() {
         return mOperation;
     }

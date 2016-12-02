@@ -14,6 +14,9 @@ public class MaxWalkingFloater extends Sprite {
     private Random random = new Random();
     private SpriteSheet floaterSheet = new SpriteSheet("walk-floater.png", 9, 8);
 
+    /**
+     * Instantiates a new Max walking floater.
+     */
     public MaxWalkingFloater() {
         setTeam(Team.FLOATER);
         int ranX = random.nextInt(545) + 1;

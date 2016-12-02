@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
+/**
+ * The type Game panel.
+ */
 public class GamePanel extends Panel {
 	
 	// ==============================================================
@@ -36,7 +39,12 @@ public class GamePanel extends Panel {
 	// ==============================================================
 	// CONSTRUCTOR 
 	// ==============================================================
-	
+
+	/**
+	 * Instantiates a new Game panel.
+	 *
+	 * @param dim the dim
+	 */
 	public GamePanel(Dimension dim){
 	    gmf = new GameFrame();
 		gmf.getContentPane().add(this);
@@ -167,26 +175,28 @@ public class GamePanel extends Panel {
 	// This method draws some text to the middle of the screen before/after a game
 	private void displayTextOnScreen() {
 
+		grpOff.setColor(Color.RED);
 		strDisplay = "DIABLO DODGEBALL";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4);
 
-		strDisplay = "use the arrow keys to control Diablo";
+		grpOff.setColor(Color.WHITE);
+		strDisplay = "Directional Keys to Control Diablo";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 40);
 
-		strDisplay = "use the left click to throw balls";
+		strDisplay = "Left Click Hold and Release to Throw Balls";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 80);
 
-        strDisplay = "and jump/dodge in direction of mouse";
+        strDisplay = "Left Click to Jump/Dodge";
         grpOff.drawString(strDisplay,
                 (Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
                         + nFontHeight + 120);
 
-		strDisplay = "use the right click to catch and pick up balls";
+		strDisplay = "Right Click to Catch and Pick Up Balls";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 160);
@@ -205,18 +215,25 @@ public class GamePanel extends Panel {
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 280);
-		strDisplay = "left pinkie on 'A' for Shield";
-		grpOff.drawString(strDisplay,
-				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
-						+ nFontHeight + 320);
 
-		strDisplay = "left index finger on 'F' for Guided Missile";
+		strDisplay = "'M' to Toggle Background Music";
 		grpOff.drawString(strDisplay,
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 360);
 
 	}
-	
+
+	/**
+	 * Gets frm.
+	 *
+	 * @return the frm
+	 */
 	public GameFrame getFrm() {return this.gmf;}
+
+	/**
+	 * Sets frm.
+	 *
+	 * @param frm the frm
+	 */
 	public void setFrm(GameFrame frm) {this.gmf = frm;}
 }

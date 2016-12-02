@@ -2,20 +2,67 @@ package _08final.mvc.model;
 
 import java.awt.*;
 
+/**
+ * The interface Movable.
+ */
 public interface Movable {
 
-	public static enum Team {
-		FRIEND, FOE, FLOATER, DEBRIS, NEUTRAL
+    /**
+     * The enum Team.
+     */
+    public static enum Team {
+        /**
+         * Friend team.
+         */
+        FRIEND, /**
+         * Foe team.
+         */
+        FOE, /**
+         * Floater team.
+         */
+        FLOATER, /**
+         * Debris team.
+         */
+        DEBRIS, /**
+         * Neutral team.
+         */
+        NEUTRAL
 	}
 
-	//for the game to move and draw movable objects
+    /**
+     * Move.
+     */
+//for the game to move and draw movable objects
 	public void move();
-	public void draw(Graphics g);
 
-	//for collision detection
+    /**
+     * Draw.
+     *
+     * @param g the g
+     */
+    public void draw(Graphics g);
+
+    /**
+     * Gets center.
+     *
+     * @return the center
+     */
+//for collision detection
 	public Point getCenter();
-	public int getRadius();
-	public Team getTeam();
+
+    /**
+     * Gets radius.
+     *
+     * @return the radius
+     */
+    public int getRadius();
+
+    /**
+     * Gets team.
+     *
+     * @return the team
+     */
+    public Team getTeam();
 
 
 } //end Movable

@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * The type Sprite sheet.
+ */
 public class SpriteSheet {
 
     //Instance Variables
@@ -14,7 +17,14 @@ public class SpriteSheet {
     private BufferedImage sheet = null;
     private BufferedImage[] frameImages;
 
-    //Constructors
+    /**
+     * Instantiates a new Sprite sheet.
+     *
+     * @param aPath  the a path
+     * @param width  the width
+     * @param height the height
+     */
+//Constructors
     public SpriteSheet(String aPath, int width, int height) {
 
         path = aPath;
@@ -30,27 +40,58 @@ public class SpriteSheet {
 
     }
 
+    /**
+     * Gets sprite.
+     *
+     * @param frame the frame
+     * @return the sprite
+     */
     public BufferedImage getSprite(int frame) {
         return frameImages[frame];
     }
 
-    //Methods
+    /**
+     * Gets height.
+     *
+     * @return the height
+     */
+//Methods
     public int getHeight() {
         return frameHeight;
     }
 
+    /**
+     * Gets width.
+     *
+     * @return the width
+     */
     public int getWidth() {
         return frameWidth;
     }
 
+    /**
+     * Gets column count.
+     *
+     * @return the column count
+     */
     public int getColumnCount() {
         return sheet.getWidth() / getWidth();
     }
 
+    /**
+     * Gets row count.
+     *
+     * @return the row count
+     */
     public int getRowCount() {
         return sheet.getHeight() / getHeight();
     }
 
+    /**
+     * Gets frame count.
+     *
+     * @return the frame count
+     */
     public int getFrameCount() {
         int cols = getColumnCount();
         int rows = getRowCount();
@@ -62,6 +103,11 @@ public class SpriteSheet {
         return sprite;
     }
 
+    /**
+     * Get all sprites buffered image [ ].
+     *
+     * @return the buffered image [ ]
+     */
     public BufferedImage[] getAllSprites() {
         int frameCount =  getFrameCount();
         BufferedImage[] sprites = new BufferedImage[frameCount];

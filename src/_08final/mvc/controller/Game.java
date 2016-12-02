@@ -16,6 +16,10 @@ import java.util.Set;
 // == This Game class is the CONTROLLER
 // ===============================================
 
+/**
+ * Main controller for dodgeball game
+ * The type Game.
+ */
 public class Game implements Runnable, KeyListener, MouseMotionListener, MouseListener {
 
 	// ===============================================
@@ -23,14 +27,38 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	// ===============================================
 
 	private final Set<Integer> pressedKeys = new HashSet<Integer>();
+	/**
+	 * The constant ARENA_HEIGHT.
+	 */
 	public static final int ARENA_HEIGHT = 660;
+	/**
+	 * The constant ARENA_WIDTH.
+	 */
 	public static final int ARENA_WIDTH = 1120;
-    public static final int BOTTOM_AND_SCORE = 100;
+	/**
+	 * The constant BOTTOM_AND_SCORE.
+	 */
+	public static final int BOTTOM_AND_SCORE = 100;
+	/**
+	 * The constant DIM.
+	 */
 	public static final Dimension DIM = new Dimension(ARENA_WIDTH, ARENA_HEIGHT + BOTTOM_AND_SCORE); //the dimension of the game.
 	private GamePanel gmpPanel;
+	/**
+	 * The constant R.
+	 */
 	public static Random R = new Random();
+	/**
+	 * The constant SAINT_X_TERRITORY.
+	 */
 	public static final double SAINT_X_TERRITORY = ARENA_WIDTH - (ARENA_WIDTH / 2);
+	/**
+	 * The constant SAINTS_PER_COLUMN.
+	 */
 	public final static int SAINTS_PER_COLUMN = 5;
+	/**
+	 * The constant ANI_DELAY.
+	 */
 	public final static int ANI_DELAY = 45; // milliseconds between screen
 	// updates (animation)
 	private Thread thrAnim;
@@ -58,6 +86,9 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	// ==CONSTRUCTOR
 	// ===============================================
 
+	/**
+	 * Instantiates a new Game.
+	 */
 	public Game() {
 
 		gmpPanel = new GamePanel(DIM);
@@ -71,6 +102,11 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 	// ==METHODS
 	// ===============================================
 
+	/**
+	 * Main.
+	 *
+	 * @param args the args
+	 */
 	public static void main(String args[]) {
 		EventQueue.invokeLater(new Runnable() { // uses the Event dispatch thread from Java 5 (refactored)
 			public void run() {
@@ -413,7 +449,10 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
         CommandCenter.getInstance().spawnDiablo(false);
     }
 
-	//some methods for timing events in the game,
+	/**
+	 * Tick.
+	 */
+//some methods for timing events in the game,
 	//such as the appearance of UFOs, floaters (power-ups), etc. 
 	public void tick() {
 		if (nTick == Integer.MAX_VALUE)
@@ -422,6 +461,11 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
 			nTick++;
 	}
 
+	/**
+	 * Gets tick.
+	 *
+	 * @return the tick
+	 */
 	public int getTick() {
 		return nTick;
 	}

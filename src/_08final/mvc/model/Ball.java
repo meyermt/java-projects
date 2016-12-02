@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * Created by michaelmeyer on 11/1/16.
  */
-public class Ball extends Sprite {
+public class Ball extends Sprite implements Scoreable {
 
     private SpriteSheet ballSheet = new SpriteSheet("ball.png", 9, 8);
     private final static int BALL_DIAMETER = 18;
@@ -18,8 +18,17 @@ public class Ball extends Sprite {
     private final int uid;
     private double radians;
     private double ballSpeed;
+    /**
+     * The Is moving.
+     */
     public boolean isMoving;
+    /**
+     * The Flying right.
+     */
     public boolean flyingRight;
+    /**
+     * The Flying up.
+     */
     public boolean flyingUp;
     private Saint saintRetriever;
     private Sprite thrower;
@@ -30,8 +39,9 @@ public class Ball extends Sprite {
     /**
      * Three ways balls are constructed. One is initial center line. Uses this constructor. this requires knowledge of ball position
      * and total number of balls.
-     * @param ballPos
-     * @param numBalls
+     *
+     * @param ballPos  the ball pos
+     * @param numBalls the num balls
      */
     public Ball(int ballPos, int numBalls) {
         uid = ballPos;
@@ -42,6 +52,12 @@ public class Ball extends Sprite {
         isMoving = false;
     }
 
+    /**
+     * Instantiates a new Ball.
+     *
+     * @param uid    the uid
+     * @param center the center
+     */
     public Ball(int uid, Point center) {
         this.uid = uid;
         setTeam(Team.NEUTRAL);
@@ -52,7 +68,11 @@ public class Ball extends Sprite {
 
     /**
      * The other construction, which assumes this ball is being thrown by a sprite of some sort
-     * @param sprite
+     *
+     * @param uid    the uid
+     * @param sprite the sprite
+     * @param mouseX the mouse x
+     * @param mouseY the mouse y
      */
     public Ball(int uid, Sprite sprite, int mouseX, int mouseY) {
         this.uid = uid;
@@ -69,14 +89,29 @@ public class Ball extends Sprite {
         pointsMultiplier = (int) sprite.getThrowingSpeed();
     }
 
+    /**
+     * Gets points.
+     *
+     * @return the points
+     */
     public int getPoints() {
         return pointsCounter * pointsMultiplier;
     }
 
+    /**
+     * Sets thrower.
+     *
+     * @param thrower the thrower
+     */
     public void setThrower(Sprite thrower) {
         this.thrower = thrower;
     }
 
+    /**
+     * Gets thrower.
+     *
+     * @return the thrower
+     */
     public Sprite getThrower() {
         return thrower;
     }
@@ -112,6 +147,9 @@ public class Ball extends Sprite {
         }
     }
 
+    /**
+     * Random flight.
+     */
     public void randomFlight() {
         Point pnt = getCenter();
         radians = (random.nextDouble() * Math.PI) - (random.nextDouble() * Math.PI);
@@ -143,14 +181,29 @@ public class Ball extends Sprite {
         isMoving = true;
     }
 
+    /**
+     * Gets uid.
+     *
+     * @return the uid
+     */
     public int getUID() {
         return uid;
     }
 
+    /**
+     * Gets saint retriever.
+     *
+     * @return the saint retriever
+     */
     public Saint getSaintRetriever() {
         return saintRetriever;
     }
 
+    /**
+     * Sets saint retriever.
+     *
+     * @param saint the saint
+     */
     public void setSaintRetriever(Saint saint) {
         this.saintRetriever = saint;
     }

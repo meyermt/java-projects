@@ -4,12 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 
+/**
+ * The type Game frame.
+ */
 public class GameFrame extends JFrame {
 
 	private JPanel contentPane;
 	private BorderLayout borderLayout1 = new BorderLayout();
 
-	public GameFrame() {
+    /**
+     * Instantiates a new Game frame.
+     */
+    public GameFrame() {
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		try {
 			initialize();

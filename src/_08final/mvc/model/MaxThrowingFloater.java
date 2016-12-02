@@ -14,6 +14,9 @@ public class MaxThrowingFloater extends Sprite {
     private Random random = new Random();
     private SpriteSheet floaterSheet = new SpriteSheet("throw-floater.png", 9, 8);
 
+    /**
+     * Instantiates a new Max throwing floater.
+     */
     public MaxThrowingFloater() {
         setTeam(Team.FLOATER);
         int ranX = random.nextInt(545) + 1;

@@ -19,18 +19,36 @@ public class Saint extends Sprite {
     private static final int MIN_THROWING_CADENCE = 1;
     private static final int MIN_THROWING_SPEED = 10;
 
+    /**
+     * The Top speed.
+     */
     public int topSpeed = 30;
     private int lostCounter = 0;
     private BufferedImage[] saintPhases = new SpriteSheet("saint-phases.png", 32, 32).getAllSprites();
 
+    /**
+     * The Is throwing.
+     */
     public boolean isThrowing;
+    /**
+     * The Is releasing throw.
+     */
     public boolean isReleasingThrow;
     private boolean isJumping;
     private boolean isCommandingRetrieval;
+    /**
+     * The Has ball.
+     */
     public boolean hasBall;
+    /**
+     * The Is catching.
+     */
     public boolean isCatching;
     private boolean isFacingLeft;
     private boolean isFacingRight;
+    /**
+     * The Is retrieving.
+     */
     public boolean isRetrieving;
     private boolean leftStepSwitch;
     private boolean rightStepSwitch;
@@ -45,9 +63,17 @@ public class Saint extends Sprite {
     private boolean isWalkingRight;
     private boolean isWalkingUp;
 
+    /**
+     * Instantiates a new Saint.
+     */
     public Saint() {
     }
 
+    /**
+     * Instantiates a new Saint.
+     *
+     * @param startingPoint the starting point
+     */
     public Saint(Point startingPoint) {
         isFacingLeft = true;
         isFacingRight = false;
@@ -95,6 +121,11 @@ public class Saint extends Sprite {
         setCenter(new Point((int) dX, (int) dY));
     }
 
+    /**
+     * Bounce off edges.
+     *
+     * @param pnt the pnt
+     */
     public void bounceOffEdges(Point pnt) {
         if (pnt.x + SAINT_RADIUS > Game.ARENA_WIDTH && isWalkingRight) {
             radians = Math.PI - radians;
@@ -153,6 +184,11 @@ public class Saint extends Sprite {
         }
     }
 
+    /**
+     * Retrieve ball.
+     *
+     * @param ball the ball
+     */
     public void retrieveBall(Ball ball) {
         isRetrieving = true;
         isCommandingRetrieval = true;
@@ -168,6 +204,11 @@ public class Saint extends Sprite {
         }
     }
 
+    /**
+     * Pick up ball.
+     *
+     * @param ball the ball
+     */
     public void pickUpBall(Ball ball) {
         //just in case we picked up a ball on the way to a ball
         ball.setSaintRetriever(this);
@@ -176,14 +217,29 @@ public class Saint extends Sprite {
         hasBall = true;
     }
 
+    /**
+     * Gets ball.
+     *
+     * @return the ball
+     */
     public Ball getBall() {
         return ball;
     }
 
+    /**
+     * Sets ball.
+     *
+     * @param ball the ball
+     */
     public void setBall(Ball ball) {
         this.ball = ball;
     }
 
+    /**
+     * Gets throwing cadence.
+     *
+     * @return the throwing cadence
+     */
     public int getThrowingCadence() {
         return throwingCadence;
     }

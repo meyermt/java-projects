@@ -14,8 +14,17 @@ public class Diablo extends Sprite {
     private static final int WALKING_SPEED = 7;
     private static final int DODGE_COUNT = 3;
     private static final int DODGE_SPEED = 20;
+    /**
+     * The constant MAX_THROWING_SPEED.
+     */
     public static final int MAX_THROWING_SPEED = 40;
+    /**
+     * The constant DIABLO_DIAMETER.
+     */
     public static final int DIABLO_DIAMETER = 60;
+    /**
+     * The constant DIABLO_RADIUS.
+     */
     public static final int DIABLO_RADIUS = DIABLO_DIAMETER / 2;
 
     //positions in this array: 0 - walk right, 1 - walk right, 2 - walk left, 3 - walk left
@@ -28,16 +37,43 @@ public class Diablo extends Sprite {
 
     private int walkingSpeed;
     private boolean bProtected; //for fade in and out
+    /**
+     * The Is throwing.
+     */
     public boolean isThrowing;
+    /**
+     * The Is releasing throw.
+     */
     public boolean isReleasingThrow;
+    /**
+     * The Is jumping.
+     */
     public boolean isJumping;
+    /**
+     * The Has ball.
+     */
     public boolean hasBall;
+    /**
+     * The Is catching.
+     */
     public boolean isCatching;
     private boolean isFacingLeft;
     private boolean isFacingRight;
+    /**
+     * The Walking left.
+     */
     public boolean walkingLeft;
+    /**
+     * The Walking right.
+     */
     public boolean walkingRight;
+    /**
+     * The Walking up.
+     */
     public boolean walkingUp;
+    /**
+     * The Walking down.
+     */
     public boolean walkingDown;
 
     private boolean leftStepSwitch;
@@ -47,6 +83,9 @@ public class Diablo extends Sprite {
     private double radians;
     private int dodgeCounter = 0;
 
+    /**
+     * Instantiates a new Diablo.
+     */
     public Diablo() {
         isJumping = false;
         hasBall = false;
@@ -141,6 +180,12 @@ public class Diablo extends Sprite {
         }
     }
 
+    /**
+     * Dodge.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public void dodge(int x, int y) {
         radians = Math.atan2((y - getCenter().getY()), (x - getCenter().getX()));
         isJumping = true;
@@ -190,10 +235,20 @@ public class Diablo extends Sprite {
         }
     }
 
+    /**
+     * Gets diablo pic.
+     *
+     * @return the diablo pic
+     */
     public BufferedImage getDiabloPic() {
         return diabloPhases[2];
     }
 
+    /**
+     * Sets protected.
+     *
+     * @param bParam the b param
+     */
     public void setProtected(boolean bParam) {
         if (bParam) {
             setFadeValue(0);
@@ -201,6 +256,11 @@ public class Diablo extends Sprite {
         bProtected = bParam;
     }
 
+    /**
+     * Gets protected.
+     *
+     * @return the protected
+     */
     public boolean getProtected() {return bProtected;}
 
     //longer it is held, more updates made
