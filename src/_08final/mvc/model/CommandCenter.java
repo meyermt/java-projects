@@ -88,8 +88,6 @@ public class CommandCenter {
 	 */
 	public void spawnBalls(int numBalls) {
 		for (int i = 1; i <= numBalls; i++) {
-			System.out.println("num balls is: " + numBalls);
-			System.out.println("spawning starting ball");
 			Ball ball = new Ball(i, numBalls);
 			opsList.enqueue(ball, CollisionOp.Operation.ADD);
 		}
