@@ -263,6 +263,7 @@ public class Game implements Runnable, KeyListener, MouseMotionListener, MouseLi
                         }
                     } else if (movFoe instanceof Saint && movFriend instanceof Ball) {
                         Ball ball = (Ball) movFriend;
+						//random bounce off saint
                         ball.randomFlight();
                         Saint saint = (Saint) movFoe;
                         if (saint.hasBall) {

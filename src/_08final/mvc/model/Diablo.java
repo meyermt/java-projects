@@ -127,8 +127,6 @@ public class Diablo extends Sprite {
             }
             setDeltaX( Math.cos(radians) * DODGE_SPEED );
             setDeltaY( Math.sin(radians) * DODGE_SPEED );
-            System.out.println("x change from " + pnt.x + " by "+ getDeltaX());
-            System.out.println("y change from " + pnt.y + " by "+ getDeltaY());
             if (getDeltaX() + pnt.x - DIABLO_RADIUS< 0) {
                 setDeltaX(0);
             }

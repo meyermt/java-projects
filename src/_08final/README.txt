@@ -22,7 +22,6 @@ How Scoring Works
 -----------------
 
 Points are rewarded for both catches and hits similarly. The longer a ball travels before catch/hit, the more points.
-Points are also multiplied by the level the player is on, so later level hits/catches are rewarded much more.
 
 How to Run the Game
 -------------------
