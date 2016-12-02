@@ -19,8 +19,9 @@ public class MaxWalkingFloater extends Sprite {
      */
     public MaxWalkingFloater() {
         setTeam(Team.FLOATER);
-        int ranX = random.nextInt(545) + 1;
-        int ranY = random.nextInt(645) + 1;
+        //just putting these somewhere safely in diablo's territory
+        int ranX = random.nextInt(500) + 20;
+        int ranY = random.nextInt(600) + 20;
         setCenter(new Point(ranX, ranY));
     }
 
